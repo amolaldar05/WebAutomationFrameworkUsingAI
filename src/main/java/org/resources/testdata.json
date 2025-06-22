@@ -1,0 +1,17 @@
+{
+  "users": [
+    {
+      "username": "john.doe@example.com",
+      "password": "Password123!"
+    },
+    {
+      "username": "jane.smith@example.com",
+      "password": "SecurePass456$"
+    },
+    {
+      "username": "test.user@example.com",
+      "password": "Test@7890"
+    }
+  ]
+}
+

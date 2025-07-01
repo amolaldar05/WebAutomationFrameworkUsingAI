@@ -58,6 +58,20 @@ public class MySQLUtils {
             if (registrationSuccess) {
                 stmt.execute(insertUserSQL);
                 stmt.execute(insertCredSQL);
+                truncateTableIfTenDatas("users");
+                truncateTableIfTenDatas("valid_credentials");
+            }
+        }
+    }
+
+    public static void truncateTableIfTenDatas(String tableName) throws SQLException {
+        String countQuery = "SELECT COUNT(*) FROM " + tableName;
+        String truncateQuery = "TRUNCATE TABLE " + tableName;
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(countQuery)) {
+            if (rs.next() && rs.getInt(1) >= 10) {
+                stmt.execute(truncateQuery);
             }
         }
     }

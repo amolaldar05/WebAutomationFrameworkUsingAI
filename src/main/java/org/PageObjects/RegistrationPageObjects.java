@@ -4,10 +4,15 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 public class RegistrationPageObjects {
     private WebDriver driver;
+    WebDriverWait wait;
 
     @FindBy(id = "firstName")
     private WebElement firstNameInput;
@@ -39,31 +44,35 @@ public class RegistrationPageObjects {
     @FindBy(xpath = "//input[@type='checkbox' and @formcontrolname='required']")
     private WebElement ageCheckbox;
 
-    @FindBy(id = "login")
+    @FindBy(css = "input[value='Register']")
     private WebElement registerButton;
+
+    @FindBy(xpath = "//h1[text()='Account Created Successfully']")
+    private WebElement accountCreatedText;
+
+    @FindBy(xpath = "//button[text()='login']")
+    private WebElement loginBtn;
+
 
     public RegistrationPageObjects(WebDriver driver) {
         this.driver = driver;
         PageFactory.initElements(driver, this);
+        wait = new WebDriverWait(driver, Duration.ofSeconds(5));
     }
 
     public void enterFirstName(String firstName) {
-        firstNameInput.clear();
         firstNameInput.sendKeys(firstName);
     }
 
     public void enterLastName(String lastName) {
-        lastNameInput.clear();
         lastNameInput.sendKeys(lastName);
     }
 
     public void enterEmail(String email) {
-        emailInput.clear();
         emailInput.sendKeys(email);
     }
 
     public void enterPhone(String phone) {
-        phoneInput.clear();
         phoneInput.sendKeys(phone);
     }
 
@@ -95,8 +104,11 @@ public class RegistrationPageObjects {
         }
     }
 
-    public void clickRegister() {
+    public String clickRegister() {
+
         registerButton.click();
+        wait.until(ExpectedConditions.visibilityOf(accountCreatedText));
+        return accountCreatedText.getText();
+
     }
 }
-

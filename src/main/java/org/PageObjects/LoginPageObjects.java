@@ -4,15 +4,17 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 public class LoginPageObjects {
 
     private final WebDriver driver;
+    private WebDriverWait wait;
 
-    public LoginPageObjects(WebDriver driver) {
-        this.driver=driver;
-        PageFactory.initElements(driver, this);
-    }
 
     @FindBy(id = "userEmail")
     private WebElement emailInput;
@@ -23,12 +25,28 @@ public class LoginPageObjects {
     @FindBy(id = "login")
     private WebElement loginButton;
 
+    @FindBy(xpath = "//div[@aria-label='Incorrect email or password.']")
+    private WebElement errorMessage;
+
     @FindBy(css = ".forgot-password-link")
     private WebElement forgotPasswordLink;
+
+    @FindBy(xpath = "//h3[text()='Enter New Password']")
+    private WebElement newPassTitle;
+
 
     @FindBy(css = ".login-wrapper-footer-text .text-reset")
     private WebElement registerHereLink;
 
+    @FindBy(css = "h1.login-title")
+    private WebElement registerTitle;
+
+
+    public LoginPageObjects(WebDriver driver) {
+        this.driver=driver;
+        PageFactory.initElements(driver, this);
+        wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+    }
     public void enterEmail(String email) {
         emailInput.clear();
         emailInput.sendKeys(email);
@@ -42,14 +60,19 @@ public class LoginPageObjects {
     public void clickLogin() {
         loginButton.click();
     }
-
-    public void clickForgotPassword() {
-        forgotPasswordLink.click();
-        driver.navigate().back();
+    public String getErrorMsg(){
+        wait.until(ExpectedConditions.visibilityOf(errorMessage));
+        return errorMessage.getText();
     }
 
-    public void clickRegisterHere() {
+    public String clickForgotPassword() {
+        forgotPasswordLink.click();
+        return newPassTitle.getText();
+    }
+
+    public String clickRegisterHere() {
         registerHereLink.click();
+        return registerTitle.getText();
+
     }
 }
-

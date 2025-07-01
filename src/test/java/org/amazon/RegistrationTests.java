@@ -1,46 +1,50 @@
 package org.amazon;
 
+import org.PageObjects.LoginPageObjects;
 import org.PageObjects.RegistrationPageObjects;
 import org.BaseComponent.BaseClass;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.openqa.selenium.WebDriver;
+import org.Utils.MySQLUtils;
+import org.testng.asserts.SoftAssert;
+import org.TestData.RegistrationTestData;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class RegistrationTests extends BaseClass {
 
-    @Test (dependsOnGroups = "registration")
-    public void testValidRegistration() {
-        WebDriver driver = getDriver();
-        RegistrationPageObjects registrationPage = new RegistrationPageObjects(driver);
-        registrationPage.enterFirstName("John");
-        registrationPage.enterLastName("Doe");
-        registrationPage.enterEmail("john.doe@example.com");
-        registrationPage.enterPhone("1234567890");
-        registrationPage.selectOccupation("Doctor");
-        registrationPage.selectGender("Male");
-        registrationPage.enterPassword("Password123!");
-        registrationPage.enterConfirmPassword("Password123!");
+    @Test
+    public void testValidRegistration() throws SQLException {
+        SoftAssert softAssert = new SoftAssert();
+        // Use test data from the dedicated package
+        RegistrationTestData testData = RegistrationTestData.generateRandom();
+
+        LoginPageObjects loginPageObjects = new LoginPageObjects(getDriver());
+        RegistrationPageObjects registrationPage = new RegistrationPageObjects(getDriver());
+        loginPageObjects.clickRegisterHere();
+        registrationPage.enterFirstName(testData.firstName);
+        registrationPage.enterLastName(testData.lastName);
+        registrationPage.enterEmail(testData.email);
+        registrationPage.enterPhone(testData.phone);
+        registrationPage.selectOccupation(testData.occupation);
+        registrationPage.selectGender(testData.gender);
+        registrationPage.enterPassword(testData.password);
+        registrationPage.enterConfirmPassword(testData.password);
         registrationPage.checkAgeCheckbox();
-        registrationPage.clickRegister();
-        // Add assertion for successful registration, e.g., check for a success message or redirect
-        // Assert.assertTrue(driver.getPageSource().contains("Registration Successful"));
+        String accountCreatedText = registrationPage.clickRegister();
+        softAssert.assertEquals(accountCreatedText, "Account Created Successfully");
+
+        // Only insert into DB if registration was successful
+        if ("Account Created Successfully".equals(accountCreatedText)) {
+            org.Utils.MySQLUtils.createUsersTableAndInsertSample(
+                testData.firstName, testData.lastName, testData.email, testData.phone, testData.occupation, testData.gender, testData.password, true
+            );
+        }
+        softAssert.assertAll();
     }
 
-    @Test
-    public void testRegistrationWithMissingFields() {
-        WebDriver driver = getDriver();
-        RegistrationPageObjects registrationPage = new RegistrationPageObjects(driver);
-        registrationPage.enterFirstName("");
-        registrationPage.enterLastName("");
-        registrationPage.enterEmail("");
-        registrationPage.enterPhone("");
-        registrationPage.selectOccupation("Doctor");
-        registrationPage.selectGender("Male");
-        registrationPage.enterPassword("");
-        registrationPage.enterConfirmPassword("");
-        registrationPage.checkAgeCheckbox();
-        registrationPage.clickRegister();
-        // Add assertion for error message, e.g., check for validation errors
-        // Assert.assertTrue(driver.getPageSource().contains("This field is required"));
-    }
 }

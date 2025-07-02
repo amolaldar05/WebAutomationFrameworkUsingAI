@@ -30,8 +30,8 @@ public class LoginTests extends BaseClass {
 		jsonUtils = new JsonUtils("src/main/java/org/resources/testdata.json");
 	}
 
-	@Test(priority = 4)
-	public void testValidLogin() throws IOException, InterruptedException, SQLException {
+	@Test(priority = 4, groups = { "regression" })
+	public void validLoginTest() throws IOException, InterruptedException, SQLException {
 		ThrottleManager.waitIfNeeded();
 		ProductListingPageObjects productListingPageObjects = new ProductListingPageObjects(getDriver());
 		// Fetch valid credentials from database
@@ -52,13 +52,13 @@ public class LoginTests extends BaseClass {
 		String loginSucMsg = loginPage.getSuccessMsg();
 		System.out.println("loginSucMsg:====" + loginSucMsg);
 		String logoTxt = productListingPageObjects.getLogoTxt();
-		// softAssert.assertEquals(loginSucMsg,"Login Successfully");
+		softAssert.assertEquals(loginSucMsg,"Login Successfully");
 		softAssert.assertEquals(logoTxt, "Automation Practice");
 		softAssert.assertAll();
 	}
 
-	@Test(priority = 1)
-	public void testInvalidLogin() {
+	@Test(priority = 1, groups = { "regression" })
+	public void invalidLoginTest() {
 		ThrottleManager.waitIfNeeded();
 
 		JsonNode firstUser = jsonUtils.getRootNode().get("users").get(1);
@@ -72,8 +72,8 @@ public class LoginTests extends BaseClass {
 		softAssert.assertAll();
 	}
 
-	@Test(priority = 2)
-	public void testForgotPassword() throws InterruptedException {
+	@Test(priority = 2, groups = {"smoke"})
+	public void forgotPasswordLinkTest() throws InterruptedException {
 		ThrottleManager.waitIfNeeded();
 		String title = loginPage.clickForgotPassword();
 		softAssert.assertEquals(title, "Enter New Password");
@@ -83,8 +83,8 @@ public class LoginTests extends BaseClass {
 		// "Forgot password link did not navigate correctly!");
 	}
 
-	@Test(priority = 3)
-	public void testRegisterHereLink() throws InterruptedException {
+	@Test(priority = 3, groups = {"smoke"})
+	public void registerHereLinkTest() throws InterruptedException {
 		ThrottleManager.waitIfNeeded();
 		String registerTitle = loginPage.clickRegisterHere();
 		softAssert.assertEquals(registerTitle, "Register");

@@ -1,28 +1,44 @@
 package org.Utils;
 
-import org.BaseComponent.BaseClass;
-import org.openqa.selenium.WebDriver;
+import org.testng.ITestContext;
+import org.testng.ITestListener;
 import org.testng.ITestResult;
-import org.testng.TestListenerAdapter;
 
-    public class TestListener extends TestListenerAdapter {
-        @Override
-        public void onTestFailure(ITestResult result) {
-            String testName = result.getName();
-            ScreenshotUtils.takeScreenshot(testName);
-            WebDriver driver = BaseClass.getDriver();
-            if (driver != null) {
-                driver.quit();
-                BaseClass.driver.remove();
-            }
-        }
-
-        @Override
-        public void onTestSuccess(ITestResult result) {
-            WebDriver driver = BaseClass.getDriver();
-            if (driver != null) {
-                driver.quit();
-                BaseClass.driver.remove();
-            }
-        }
+public class TestListener implements ITestListener {
+    @Override
+    public void onTestStart(ITestResult result) {
+        // Code to execute when a test starts
     }
+
+    @Override
+    public void onTestSuccess(ITestResult result) {
+        // Code to execute when a test passes
+    }
+
+    @Override
+    public void onTestFailure(ITestResult result) {
+        String methodName = result.getMethod().getMethodName();
+        String screenshotPath = org.Utils.ScreenshotUtils.takeScreenshot(methodName + "_FAILED_" + System.currentTimeMillis());
+        System.out.println("Screenshot taken for failed test: " + screenshotPath);
+    }
+
+    @Override
+    public void onTestSkipped(ITestResult result) {
+        // Code to execute when a test is skipped
+    }
+
+    @Override
+    public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
+        // Not used
+    }
+
+    @Override
+    public void onStart(ITestContext context) {
+        // Code to execute before any test starts
+    }
+
+    @Override
+    public void onFinish(ITestContext context) {
+        // Code to execute after all tests finish
+    }
+}

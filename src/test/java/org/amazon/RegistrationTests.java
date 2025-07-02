@@ -17,12 +17,25 @@ import java.sql.Statement;
 
 public class RegistrationTests extends BaseClass {
 
-    @Test
+    @Test(groups = "regression")
     public void testValidRegistration() throws SQLException {
         SoftAssert softAssert = new SoftAssert();
         // Use test data from the dedicated package
         RegistrationTestData testData = RegistrationTestData.generateRandom();
 
+        String accountCreatedSucMsg = getUserRegiData(testData);
+        softAssert.assertEquals(accountCreatedSucMsg, "Account Created Successfully");
+
+        // Only insert into DB if registration was successful
+        if ("Account Created Successfully".equals(accountCreatedSucMsg)) {
+            org.Utils.MySQLUtils.createUsersTableAndInsertSample(
+                testData.firstName, testData.lastName, testData.email, testData.phone, testData.occupation, testData.gender, testData.password, true
+            );
+        }
+        softAssert.assertAll();
+    }
+
+    private static String getUserRegiData(RegistrationTestData testData) {
         LoginPageObjects loginPageObjects = new LoginPageObjects(getDriver());
         RegistrationPageObjects registrationPage = new RegistrationPageObjects(getDriver());
         loginPageObjects.clickRegisterHere();
@@ -35,16 +48,8 @@ public class RegistrationTests extends BaseClass {
         registrationPage.enterPassword(testData.password);
         registrationPage.enterConfirmPassword(testData.password);
         registrationPage.checkAgeCheckbox();
-        String accountCreatedText = registrationPage.clickRegister();
-        softAssert.assertEquals(accountCreatedText, "Account Created Successfully");
-
-        // Only insert into DB if registration was successful
-        if ("Account Created Successfully".equals(accountCreatedText)) {
-            org.Utils.MySQLUtils.createUsersTableAndInsertSample(
-                testData.firstName, testData.lastName, testData.email, testData.phone, testData.occupation, testData.gender, testData.password, true
-            );
-        }
-        softAssert.assertAll();
+        String accountCreatedSucMsg = registrationPage.clickRegister();
+        return accountCreatedSucMsg;
     }
 
 }

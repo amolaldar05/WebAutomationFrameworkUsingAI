@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results ignored="0" total="4" passed="4" failed="0" skipped="0">
+  <reporter-output>
+  </reporter-output>
+  <suite started-at="2025-07-02T11:11:01 GST" name="Default suite" finished-at="2025-07-02T11:11:12 GST" duration-ms="10660">
+    <groups>
+    </groups>
+    <test started-at="2025-07-02T11:11:01 GST" name="Default test" finished-at="2025-07-02T11:11:12 GST" duration-ms="10660">
+      <class name="org.amazon.LoginTests">
+        <test-method is-config="true" signature="setUp()[pri:0, instance:org.amazon.LoginTests@4be29ed9]" started-at="2025-07-02T11:11:01 GST" name="setUp" finished-at="2025-07-02T11:11:04 GST" duration-ms="3035" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- setUp -->
+        <test-method is-config="true" signature="setUpPage()[pri:0, instance:org.amazon.LoginTests@4be29ed9]" started-at="2025-07-02T11:11:04 GST" name="setUpPage" finished-at="2025-07-02T11:11:04 GST" duration-ms="226" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- setUpPage -->
+        <test-method signature="testInvalidLogin()[pri:1, instance:org.amazon.LoginTests@4be29ed9]" started-at="2025-07-02T11:11:04 GST" name="testInvalidLogin" finished-at="2025-07-02T11:11:05 GST" duration-ms="559" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testInvalidLogin -->
+        <test-method is-config="true" signature="setUpPage()[pri:0, instance:org.amazon.LoginTests@4be29ed9]" started-at="2025-07-02T11:11:05 GST" name="setUpPage" finished-at="2025-07-02T11:11:05 GST" duration-ms="3" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- setUpPage -->
+        <test-method signature="testForgotPassword()[pri:2, instance:org.amazon.LoginTests@4be29ed9]" started-at="2025-07-02T11:11:05 GST" name="testForgotPassword" finished-at="2025-07-02T11:11:06 GST" duration-ms="1551" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testForgotPassword -->
+        <test-method is-config="true" signature="setUpPage()[pri:0, instance:org.amazon.LoginTests@4be29ed9]" started-at="2025-07-02T11:11:06 GST" name="setUpPage" finished-at="2025-07-02T11:11:06 GST" duration-ms="2" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- setUpPage -->
+        <test-method signature="testRegisterHereLink()[pri:3, instance:org.amazon.LoginTests@4be29ed9]" started-at="2025-07-02T11:11:06 GST" name="testRegisterHereLink" finished-at="2025-07-02T11:11:08 GST" duration-ms="2002" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testRegisterHereLink -->
+        <test-method is-config="true" signature="setUpPage()[pri:0, instance:org.amazon.LoginTests@4be29ed9]" started-at="2025-07-02T11:11:08 GST" name="setUpPage" finished-at="2025-07-02T11:11:08 GST" duration-ms="2" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- setUpPage -->
+        <test-method signature="testValidLogin()[pri:4, instance:org.amazon.LoginTests@4be29ed9]" started-at="2025-07-02T11:11:08 GST" name="testValidLogin" finished-at="2025-07-02T11:11:12 GST" duration-ms="3125" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testValidLogin -->
+        <test-method is-config="true" signature="tearDown()[pri:0, instance:org.amazon.LoginTests@4be29ed9]" started-at="2025-07-02T11:11:12 GST" name="tearDown" finished-at="2025-07-02T11:11:12 GST" duration-ms="111" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- tearDown -->
+      </class> <!-- org.amazon.LoginTests -->
+    </test> <!-- Default test -->
+  </suite> <!-- Default suite -->
+</testng-results>

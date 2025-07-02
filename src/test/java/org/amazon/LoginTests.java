@@ -2,6 +2,7 @@ package org.amazon;
 
 import org.BaseComponent.BaseClass;
 import org.PageObjects.LoginPageObjects;
+import org.PageObjects.ProductListingPageObjects;
 import org.Utils.JsonUtils;
 import org.Utils.ThrottleManager;
 import org.Utils.MySQLUtils;
@@ -11,11 +12,12 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
+//@Listeners(org.Utils.RetryListener.class)
 public class LoginTests extends BaseClass {
     private LoginPageObjects loginPage;
     JsonUtils jsonUtils;
@@ -29,10 +31,10 @@ public class LoginTests extends BaseClass {
          jsonUtils = new JsonUtils("src/main/java/org/resources/testdata.json");
     }
 
-    @Test(priority = 4,retryAnalyzer = org.Utils.RetryAnalyzer.class)
+    @Test(priority = 4)
     public void testValidLogin() throws IOException, InterruptedException, SQLException {
         ThrottleManager.waitIfNeeded();
-
+        ProductListingPageObjects productListingPageObjects= new ProductListingPageObjects(getDriver());
         // Fetch valid credentials from database
         String query = "SELECT username, password FROM valid_credentials ORDER BY id DESC LIMIT 1";
         String username = null;
@@ -48,8 +50,11 @@ public class LoginTests extends BaseClass {
         loginPage.enterEmail(username);
         loginPage.enterPassword(password);
         loginPage.clickLogin();
-        Thread.sleep(1000);
-        softAssert.assertEquals(getDriver().getCurrentUrl(),"https://rahulshettyacademy.com/client/dashboard/dash");
+        String loginSucMsg=loginPage.getSuccessMsg();
+        System.out.println("loginSucMsg:===="+loginSucMsg);
+        String logoTxt=productListingPageObjects.getLogoTxt();
+        //softAssert.assertEquals(loginSucMsg,"Login Successfully");
+        softAssert.assertEquals(logoTxt,"Automation Practice");
         softAssert.assertAll();
     }
 
@@ -64,8 +69,6 @@ public class LoginTests extends BaseClass {
         loginPage.enterPassword(password);
         loginPage.clickLogin();
         String errorMsg=loginPage.getErrorMsg();
-        System.out.println(errorMsg);
-        // Example: check for error message or URL remains the same
         softAssert.assertEquals(errorMsg, "Incorrect email or password.");
         softAssert.assertAll();
     }
@@ -87,7 +90,6 @@ public class LoginTests extends BaseClass {
         softAssert.assertEquals(registerTitle, "Register");
         softAssert.assertAll();
         getDriver().navigate().back();
-        // Adjust the URL or element check as per your app's behavior
-       // Assert.assertTrue(getDriver().getCurrentUrl().contains("/register"), "Register link did not navigate correctly!");
+
     }
 }

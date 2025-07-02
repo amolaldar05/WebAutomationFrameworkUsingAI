@@ -61,54 +61,92 @@ public class RegistrationPageObjects {
     }
 
     public void enterFirstName(String firstName) {
-        firstNameInput.sendKeys(firstName);
+        try {
+            firstNameInput.sendKeys(firstName);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to enter first name: " + e.getMessage(), e);
+        }
     }
 
     public void enterLastName(String lastName) {
-        lastNameInput.sendKeys(lastName);
+        try {
+            lastNameInput.sendKeys(lastName);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to enter last name: " + e.getMessage(), e);
+        }
     }
 
     public void enterEmail(String email) {
-        emailInput.sendKeys(email);
+        try {
+            emailInput.sendKeys(email);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to enter email: " + e.getMessage(), e);
+        }
     }
 
     public void enterPhone(String phone) {
-        phoneInput.sendKeys(phone);
+        try {
+            phoneInput.sendKeys(phone);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to enter phone: " + e.getMessage(), e);
+        }
     }
 
     public void selectOccupation(String occupationVisibleText) {
-        new Select(occupationSelect).selectByVisibleText(occupationVisibleText);
+        try {
+            new Select(occupationSelect).selectByVisibleText(occupationVisibleText);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to select occupation: " + e.getMessage(), e);
+        }
     }
 
     public void selectGender(String gender) {
-        if (gender.equalsIgnoreCase("Male")) {
-            genderMaleRadio.click();
-        } else if (gender.equalsIgnoreCase("Female")) {
-            genderFemaleRadio.click();
+        try {
+            if (gender.equalsIgnoreCase("Male")) {
+                genderMaleRadio.click();
+            } else if (gender.equalsIgnoreCase("Female")) {
+                genderFemaleRadio.click();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to select gender: " + e.getMessage(), e);
         }
     }
 
     public void enterPassword(String password) {
-        passwordInput.clear();
-        passwordInput.sendKeys(password);
+        try {
+            passwordInput.clear();
+            passwordInput.sendKeys(password);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to enter password: " + e.getMessage(), e);
+        }
     }
 
     public void enterConfirmPassword(String confirmPassword) {
-        confirmPasswordInput.clear();
-        confirmPasswordInput.sendKeys(confirmPassword);
+        try {
+            confirmPasswordInput.clear();
+            confirmPasswordInput.sendKeys(confirmPassword);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to enter confirm password: " + e.getMessage(), e);
+        }
     }
 
     public void checkAgeCheckbox() {
-        if (!ageCheckbox.isSelected()) {
-            ageCheckbox.click();
+        try {
+            if (!ageCheckbox.isSelected()) {
+                ageCheckbox.click();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to check age checkbox: " + e.getMessage(), e);
         }
     }
 
     public String clickRegister() {
-
-        registerButton.click();
-        wait.until(ExpectedConditions.visibilityOf(accountCreatedText));
-        return accountCreatedText.getText();
-
+        try {
+            registerButton.click();
+            wait.until(ExpectedConditions.visibilityOf(accountCreatedText));
+            return accountCreatedText.getText();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to register: " + e.getMessage(), e);
+        }
     }
 }

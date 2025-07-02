@@ -22,7 +22,7 @@ public class ScreenshotUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return fileName;
+        return destFile.getAbsolutePath();
     }
 
 

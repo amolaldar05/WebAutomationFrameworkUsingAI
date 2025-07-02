@@ -4,7 +4,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -25,8 +24,12 @@ public class LoginPageObjects {
     @FindBy(id = "login")
     private WebElement loginButton;
 
-    @FindBy(xpath = "//div[@aria-label='Incorrect email or password.']")
+    @FindBy(css = "div[aria-label='Login Successfully']")
+    private WebElement loginSuccessMsg;
+
+    @FindBy(css = "div[aria-label='Incorrect email or password.']")
     private WebElement errorMessage;
+
 
     @FindBy(css = ".forgot-password-link")
     private WebElement forgotPasswordLink;
@@ -45,34 +48,67 @@ public class LoginPageObjects {
     public LoginPageObjects(WebDriver driver) {
         this.driver=driver;
         PageFactory.initElements(driver, this);
-        wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(5));
     }
     public void enterEmail(String email) {
-        emailInput.clear();
-        emailInput.sendKeys(email);
+        try {
+            emailInput.clear();
+            emailInput.sendKeys(email);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to enter email: " + e.getMessage(), e);
+        }
     }
 
     public void enterPassword(String password) {
-        passwordInput.clear();
-        passwordInput.sendKeys(password);
+        try {
+            passwordInput.clear();
+            passwordInput.sendKeys(password);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to enter password: " + e.getMessage(), e);
+        }
     }
 
     public void clickLogin() {
-        loginButton.click();
+        try {
+            loginButton.click();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to click login button: " + e.getMessage(), e);
+        }
+    }
+    public String getSuccessMsg(){
+        try {
+            wait.until(ExpectedConditions.visibilityOf(loginSuccessMsg));
+            //wait.until(ExpectedConditions.invisibilityOf(loginSuccessMsg));
+            return loginSuccessMsg.getText();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to get success message: " + e.getMessage(), e);
+        }
     }
     public String getErrorMsg(){
-        wait.until(ExpectedConditions.visibilityOf(errorMessage));
-        return errorMessage.getText();
+        try {
+            wait.until(ExpectedConditions.visibilityOf(errorMessage));
+           // wait.until(ExpectedConditions.invisibilityOf(errorMessage));
+            return errorMessage.getText();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to get error message: " + e.getMessage(), e);
+        }
     }
 
     public String clickForgotPassword() {
-        forgotPasswordLink.click();
-        return newPassTitle.getText();
+        try {
+            forgotPasswordLink.click();
+            return newPassTitle.getText();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to click forgot password link: " + e.getMessage(), e);
+        }
     }
 
     public String clickRegisterHere() {
-        registerHereLink.click();
-        return registerTitle.getText();
-
+        try {
+            registerHereLink.click();
+            return registerTitle.getText();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to click register here link: " + e.getMessage(), e);
+        }
     }
 }

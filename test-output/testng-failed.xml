@@ -6,8 +6,10 @@
       <class name="org.amazon.LoginTests">
         <methods>
           <include name="testValidLogin"/>
+          <include name="testRegisterHereLink"/>
           <include name="setUpPage"/>
           <include name="tearDown"/>
+          <include name="testForgotPassword"/>
           <include name="setUp"/>
         </methods>
       </class> <!-- org.amazon.LoginTests -->

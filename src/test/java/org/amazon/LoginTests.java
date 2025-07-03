@@ -31,7 +31,7 @@ public class LoginTests extends BaseClass {
 		jsonUtils = new JsonUtils("src/main/java/org/resources/testdata.json");
 	}
 
-	@Test(groups = {"regression"})
+	@Test(priority = 0, groups = {"regression"})
 	public void validLoginTest() throws IOException, InterruptedException, SQLException {
 		ThrottleManager.waitIfNeeded();
 		 productListingPageObjects = new ProductListingPageObjects(getDriver());
@@ -57,7 +57,7 @@ public class LoginTests extends BaseClass {
 		softAssert.assertAll();
 	}
 
-	@Test( groups = {"regression"})
+	@Test( priority = 1, groups = {"regression"})
 	public void invalidLoginTest() {
 		ThrottleManager.waitIfNeeded();
 

@@ -86,8 +86,8 @@ public class LoginPageObjects {
     }
     public String getErrorMsg(){
         try {
-//            wait.until(ExpectedConditions.visibilityOf(errorMessage));
-           wait.until(ExpectedConditions.invisibilityOf(errorMessage));
+         wait.until(ExpectedConditions.visibilityOf(errorMessage));
+          // wait.until(ExpectedConditions.invisibilityOf(errorMessage));
             return errorMessage.getText();
         } catch (Exception e) {
             throw new RuntimeException("Failed to get error message: " + e.getMessage(), e);

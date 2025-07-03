@@ -31,7 +31,7 @@ public class LoginTests extends BaseClass {
 		jsonUtils = new JsonUtils("src/main/java/org/resources/testdata.json");
 	}
 
-	@Test(priority = 0, groups = { "regression" })
+	@Test(groups = {"regression"})
 	public void validLoginTest() throws IOException, InterruptedException, SQLException {
 		ThrottleManager.waitIfNeeded();
 		 productListingPageObjects = new ProductListingPageObjects(getDriver());
@@ -57,7 +57,7 @@ public class LoginTests extends BaseClass {
 		softAssert.assertAll();
 	}
 
-	@Test( priority = 1, groups = { "regression" })
+	@Test( groups = {"regression"})
 	public void invalidLoginTest() {
 		ThrottleManager.waitIfNeeded();
 
@@ -72,7 +72,7 @@ public class LoginTests extends BaseClass {
 		softAssert.assertAll();
 	}
 
-	@Test(groups = {"smoke"})
+	@Test(groups = {"sanity"})
 	public void forgotPasswordLinkTest() throws InterruptedException {
 		ThrottleManager.waitIfNeeded();
 		String title = loginPage.clickForgotPassword();
@@ -83,7 +83,7 @@ public class LoginTests extends BaseClass {
 		// "Forgot password link did not navigate correctly!");
 	}
 
-	@Test(groups = {"smoke"})
+	@Test(groups = {"sanity"})
 	public void registerHereLinkTest() throws InterruptedException {
 		ThrottleManager.waitIfNeeded();
 		String registerTitle = loginPage.clickRegisterHere();

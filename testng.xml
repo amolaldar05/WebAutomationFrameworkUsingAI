@@ -3,7 +3,7 @@
     <listeners>
         <listener class-name="org.Utils.TestListener"/>
     </listeners>
-    <test name="LoginTests">
+    <test name="LoginAndRegistrationTests">
         <classes>
             <class name="org.amazon.LoginTests"/>
             <class name="org.amazon.RegistrationTests"/>

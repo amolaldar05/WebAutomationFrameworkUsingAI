@@ -6,16 +6,6 @@
     <test name="LoginTests">
         <classes>
             <class name="org.amazon.LoginTests"/>
-            <methods>
-                <include name="validLoginTest"/>
-                <include name="invalidLoginTest"/>
-                <include name="forgotPasswordLinkTest"/>
-                <include name="registerHereLinkTest"/>
-            </methods>
-        </classes>
-    </test>
-    <test name="RegistrationTests">
-        <classes>
             <class name="org.amazon.RegistrationTests"/>
         </classes>
     </test>

@@ -78,7 +78,7 @@ public class LoginPageObjects {
     public String getSuccessMsg(){
         try {
             wait.until(ExpectedConditions.visibilityOf(loginSuccessMsg));
-            //wait.until(ExpectedConditions.invisibilityOf(loginSuccessMsg));
+//            wait.until(ExpectedConditions.invisibilityOf(loginSuccessMsg));
             return loginSuccessMsg.getText();
         } catch (Exception e) {
             throw new RuntimeException("Failed to get success message: " + e.getMessage(), e);
@@ -86,8 +86,8 @@ public class LoginPageObjects {
     }
     public String getErrorMsg(){
         try {
-            wait.until(ExpectedConditions.visibilityOf(errorMessage));
-           // wait.until(ExpectedConditions.invisibilityOf(errorMessage));
+//            wait.until(ExpectedConditions.visibilityOf(errorMessage));
+           wait.until(ExpectedConditions.invisibilityOf(errorMessage));
             return errorMessage.getText();
         } catch (Exception e) {
             throw new RuntimeException("Failed to get error message: " + e.getMessage(), e);

@@ -30,7 +30,7 @@ public class LoginTests extends BaseClass {
 		jsonUtils = new JsonUtils("src/main/java/org/resources/testdata.json");
 	}
 
-	@Test(priority = 4, groups = { "regression" })
+	@Test(groups = { "regression" })
 	public void validLoginTest() throws IOException, InterruptedException, SQLException {
 		ThrottleManager.waitIfNeeded();
 		ProductListingPageObjects productListingPageObjects = new ProductListingPageObjects(getDriver());

@@ -3,19 +3,9 @@
     <listeners>
         <listener class-name="org.Utils.TestListener"/>
     </listeners>
-    <test name="LoginTests">
+    <test name="LoginAndRegistrationTests">
         <classes>
             <class name="org.amazon.LoginTests"/>
-            <methods>
-                <include name="validLoginTest"/>
-                <include name="invalidLoginTest"/>
-                <include name="forgotPasswordLinkTest"/>
-                <include name="registerHereLinkTest"/>
-            </methods>
-        </classes>
-    </test>
-    <test name="RegistrationTests">
-        <classes>
             <class name="org.amazon.RegistrationTests"/>
         </classes>
     </test>

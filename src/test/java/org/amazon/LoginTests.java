@@ -23,6 +23,7 @@ public class LoginTests extends BaseClass {
 	private LoginPageObjects loginPage;
 	JsonUtils jsonUtils;
 	SoftAssert softAssert = new SoftAssert();
+	ProductListingPageObjects productListingPageObjects;
 
 	@BeforeMethod
 	public void setUpPage() throws IOException {
@@ -30,10 +31,11 @@ public class LoginTests extends BaseClass {
 		jsonUtils = new JsonUtils("src/main/java/org/resources/testdata.json");
 	}
 
-	@Test(groups = { "regression" })
+
+	@Test(groups = {"regression"})
 	public void validLoginTest() throws IOException, InterruptedException, SQLException {
 		ThrottleManager.waitIfNeeded();
-		ProductListingPageObjects productListingPageObjects = new ProductListingPageObjects(getDriver());
+		 productListingPageObjects = new ProductListingPageObjects(getDriver());
 		// Fetch valid credentials from database
 		String query = "SELECT username, password FROM valid_credentials ORDER BY id DESC LIMIT 1";
 		String username = null;
@@ -50,14 +52,13 @@ public class LoginTests extends BaseClass {
 		loginPage.enterPassword(password);
 		loginPage.clickLogin();
 		String loginSucMsg = loginPage.getSuccessMsg();
-		System.out.println("loginSucMsg:====" + loginSucMsg);
-		String logoTxt = productListingPageObjects.getLogoTxt();
 		softAssert.assertEquals(loginSucMsg,"Login Successfully");
-		softAssert.assertEquals(logoTxt, "Automation Practice");
+		String logoutMsg=productListingPageObjects.clickHeaderMenu("Sign Out");
+		softAssert.assertEquals(logoutMsg, "Logout Successfully");
 		softAssert.assertAll();
 	}
 
-	@Test(priority = 1, groups = { "regression" })
+	@Test( groups = {"regression"})
 	public void invalidLoginTest() {
 		ThrottleManager.waitIfNeeded();
 
@@ -72,7 +73,7 @@ public class LoginTests extends BaseClass {
 		softAssert.assertAll();
 	}
 
-	@Test(priority = 2, groups = {"smoke"})
+	@Test(groups = {"sanity"})
 	public void forgotPasswordLinkTest() throws InterruptedException {
 		ThrottleManager.waitIfNeeded();
 		String title = loginPage.clickForgotPassword();
@@ -83,7 +84,7 @@ public class LoginTests extends BaseClass {
 		// "Forgot password link did not navigate correctly!");
 	}
 
-	@Test(priority = 3, groups = {"smoke"})
+	@Test(groups = {"sanity"})
 	public void registerHereLinkTest() throws InterruptedException {
 		ThrottleManager.waitIfNeeded();
 		String registerTitle = loginPage.clickRegisterHere();

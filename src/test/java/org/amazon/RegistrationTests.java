@@ -17,8 +17,8 @@ import java.sql.Statement;
 
 public class RegistrationTests extends BaseClass {
 
-    @Test(groups = "regression")
-    public void testValidRegistration() throws SQLException {
+    @Test(groups = {"regression"})
+    public void validRegistrationTest() throws SQLException {
         SoftAssert softAssert = new SoftAssert();
         // Use test data from the dedicated package
         RegistrationTestData testData = RegistrationTestData.generateRandom();

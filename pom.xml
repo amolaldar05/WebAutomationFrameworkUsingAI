@@ -1,3 +1,9 @@
+<!--
+    IMPORTANT: If you use a Maven profile (e.g., -P regression, -P smoke, etc.),
+    make sure at least one test method in your included classes is annotated with the matching group.
+    If no test methods match the group, TestNG will throw a NullPointerException at runtime.
+    To run all tests, use -P all or do not specify a profile.
+  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -38,9 +44,9 @@
       <version>2.0.13</version>
     </dependency>
     <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-      <version>8.0.33</version>
+      <groupId>com.mysql</groupId>
+      <artifactId>mysql-connector-j</artifactId>
+      <version>8.2.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.poi</groupId>
@@ -75,8 +81,43 @@
           <suiteXmlFiles>
             <suiteXmlFile>testng.xml</suiteXmlFile>
           </suiteXmlFiles>
+          <!--suppress UnresolvedMavenProperty -->
+          <groups>${groups}</groups>
         </configuration>
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>regression</id>
+      <properties>
+        <groups>regression</groups>
+      </properties>
+    </profile>
+    <profile>
+      <id>smoke</id>
+      <properties>
+        <groups>smoke</groups>
+      </properties>
+    </profile>
+    <profile>
+      <id>sanity</id>
+      <properties>
+        <groups>sanity</groups>
+      </properties>
+    </profile>
+    <profile>
+      <id>e2e</id>
+      <properties>
+        <groups>e2e</groups>
+      </properties>
+    </profile>
+    <profile>
+      <id>all</id>
+      <properties>
+        <groups> </groups>
+      </properties>
+    </profile>
+  </profiles>
 </project>

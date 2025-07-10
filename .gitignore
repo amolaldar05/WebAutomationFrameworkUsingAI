@@ -37,3 +37,44 @@ build/
 ### Mac OS ###
 .DS_Store
 /.index.html
+
+# Maven build output
+target/
+build/
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# VS Code
+.vscode/
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# NetBeans
+nbproject/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# Cucumber reports
+cucumber-report/
+cucumber-html-reports/
+cucumber.json
+
+# Test output
+test-output/
+surefire-reports/

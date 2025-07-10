@@ -14,11 +14,10 @@ import org.Utils.JsonUtils;
 import org.Utils.MySQLUtils;
 import org.Utils.ThrottleManager;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
-//@Listeners(org.Utils.RetryListener.class)
+
 public class LoginTests extends BaseClass {
 	private LoginPageObjects loginPage;
 	JsonUtils jsonUtils;

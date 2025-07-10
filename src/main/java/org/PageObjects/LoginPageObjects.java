@@ -88,6 +88,10 @@ public class LoginPageObjects {
         try {
          wait.until(ExpectedConditions.visibilityOf(errorMessage));
           // wait.until(ExpectedConditions.invisibilityOf(errorMessage));
+            if (errorMessage.getText().equalsIgnoreCase("Incorrect email or password.")) {
+                emailInput.clear();
+                passwordInput.clear();
+            }
             return errorMessage.getText();
         } catch (Exception e) {
             throw new RuntimeException("Failed to get error message: " + e.getMessage(), e);

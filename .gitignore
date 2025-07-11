@@ -74,6 +74,7 @@ nbdist/
 cucumber-report/
 cucumber-html-reports/
 cucumber.json
+extent-report.html
 
 # Test output
 test-output/

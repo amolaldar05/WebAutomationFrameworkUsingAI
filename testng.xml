@@ -7,6 +7,6 @@
         <classes>
             <class name="org.amazon.LoginTests"/>
             <class name="org.amazon.RegistrationTests"/>
-        </classes>
+        </classes>s
     </test>
 </suite>

@@ -1,5 +1,6 @@
 package org.PageObjects;
 
+import org.BaseComponent.BaseClass;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -11,8 +12,8 @@ import java.time.Duration;
 
 public class LoginPageObjects {
 
+    private final WebDriverWait wait;
     private final WebDriver driver;
-    private WebDriverWait wait;
 
 
     @FindBy(id = "userEmail")
@@ -46,12 +47,18 @@ public class LoginPageObjects {
 
 
     public LoginPageObjects(WebDriver driver) {
-        this.driver=driver;
+        // Initialize PageFactory elements
+//        driver = BaseClass.getDriver();
+        this.driver = driver;
+        if (driver == null) {
+            throw new RuntimeException("❌ WebDriver instance is null. Cannot initialize LoginPageObjects.");
+        }
         PageFactory.initElements(driver, this);
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(5));
     }
     public void enterEmail(String email) {
         try {
+            wait.until(ExpectedConditions.visibilityOf(emailInput));
             emailInput.clear();
             emailInput.sendKeys(email);
         } catch (Exception e) {

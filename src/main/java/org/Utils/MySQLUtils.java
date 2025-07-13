@@ -1,5 +1,8 @@
 package org.Utils;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -7,9 +10,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class MySQLUtils {
-    private static final String URL = "jdbc:mysql://localhost:3306/testdb";
-    private static final String USER = "root";
-    private static final String PASSWORD = "Mysql@7799";
+    /*private static final String URL = ConfigReader.getDbUrl();
+    private static final String USER = ConfigReader.getDbUsername();
+    private static final String PASSWORD = ConfigReader.getDbPassword();
 
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
@@ -25,6 +28,43 @@ public class MySQLUtils {
         try { if (rs != null) rs.close(); } catch (Exception e) {}
         try { if (stmt != null) stmt.close(); } catch (Exception e) {}
         try { if (conn != null) conn.close(); } catch (Exception e) {}
+    }*/
+
+    private static HikariDataSource dataSource;
+
+    static {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(ConfigReader.getDbUrl());
+        config.setUsername(ConfigReader.getDbUsername());
+        config.setPassword(ConfigReader.getDbPassword());
+        config.setMaximumPoolSize(10); // Allows parallel threads
+        config.setConnectionTimeout(5000); // 5 sec timeout
+        config.setIdleTimeout(60000);
+        config.setMaxLifetime(300000);
+
+        dataSource = new HikariDataSource(config);
+    }
+
+    public static Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
+    }
+
+    public static ResultSet executeQuery(String query) throws SQLException {
+        Connection conn = getConnection();
+        Statement stmt = conn.createStatement();
+        return stmt.executeQuery(query);
+    }
+
+    public static void close(Connection conn, Statement stmt, ResultSet rs) {
+        try { if (rs != null) rs.close(); } catch (Exception ignored) {}
+        try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
+        try { if (conn != null) conn.close(); } catch (Exception ignored) {}
+    }
+
+    public static void shutdownPool() {
+        if (dataSource != null) {
+            dataSource.close();
+        }
     }
 
 
@@ -58,13 +98,13 @@ public class MySQLUtils {
             if (registrationSuccess) {
                 stmt.execute(insertUserSQL);
                 stmt.execute(insertCredSQL);
-                truncateTableIfTenDatas("users");
-                truncateTableIfTenDatas("valid_credentials");
+//                truncateTableIfTenDatas("users");
+//                truncateTableIfTenDatas("valid_credentials");
             }
         }
     }
 
-    public static void truncateTableIfTenDatas(String tableName) throws SQLException {
+    /*public static void truncateTableIfTenDatas(String tableName) throws SQLException {
         String countQuery = "SELECT COUNT(*) FROM " + tableName;
         String truncateQuery = "TRUNCATE TABLE " + tableName;
         try (Connection conn = getConnection();
@@ -74,5 +114,5 @@ public class MySQLUtils {
                 stmt.execute(truncateQuery);
             }
         }
-    }
+    }*/
 }

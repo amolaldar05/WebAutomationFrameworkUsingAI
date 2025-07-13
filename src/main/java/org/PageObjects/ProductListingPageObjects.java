@@ -11,24 +11,17 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 import java.util.List;
 
-public class ProductListingPageObjects {
+public class ProductListingPageObjects extends HeaderObjects {
     WebDriverWait wait;
     private WebDriver driver;
     int productIndex;
 
     public ProductListingPageObjects(WebDriver driver) {
+        super(driver);
         this.driver = driver;
         PageFactory.initElements(driver, this);
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(5));
     }
-
-    By logoTxt = By.xpath("//p[text()='Automation Practice']");
-
-    @FindBy(css = ".btn.btn-custom")
-    List<WebElement> headerMenus;
-
-    @FindBy(css = "div[aria-label='Logout Successfully']")
-    private WebElement logoutSuccessMsg;
 
     @FindBy(css = ".card-body h5 b")
     List<WebElement> productNames;
@@ -42,29 +35,7 @@ public class ProductListingPageObjects {
     @FindBy(css = "div[aria-label='Product Added To Cart']")
     private WebElement productAddedSuccessMsg;
 
-
-
-
-    public String getLogoTxt() {
-        wait.until(ExpectedConditions.visibilityOf(driver.findElement(logoTxt)));
-        return driver.findElement(logoTxt).getText();
-    }
-
-    public String clickHeaderMenu(String menuName) {
-        wait.until(ExpectedConditions.visibilityOfAllElements(headerMenus));
-        headerMenus.stream()
-                .filter(menu -> menu.getText().equalsIgnoreCase(menuName))
-                .findFirst()
-                .ifPresentOrElse(
-                        WebElement::click,
-
-                        () -> {
-                            throw new RuntimeException("Menu not found: " + menuName);
-                        }
-                );
-        wait.until(ExpectedConditions.visibilityOfAllElements(logoutSuccessMsg));
-        return logoutSuccessMsg.getText();
-    }
+    By cartCountLabel = By.xpath("//button[@class='btn btn-custom']//label");
 
     public void getIndexSpceProduct(String productName) {
         wait.until(ExpectedConditions.visibilityOfAllElements(productNames));
@@ -92,17 +63,50 @@ public class ProductListingPageObjects {
 
     public String getProductAddedSuccessMsg() {
         try {
-            wait.until(ExpectedConditions.invisibilityOf(spinner));
+
             wait.until(ExpectedConditions.visibilityOf(productAddedSuccessMsg));
+            wait.until(ExpectedConditions.invisibilityOf(spinner));
             return productAddedSuccessMsg.getText();
         } catch (Exception e) {
             throw new RuntimeException("Failed to get product added success message: " + e.getMessage(), e);
         }
     }
 
-    public String getCartSuccessMsg() {
-        return "";
+
+
+    public int getCartCount(WebDriver driver) {
+        String countText = driver.findElement(cartCountLabel).getText().trim();
+        if (countText.isEmpty()) {
+            return 0; // Cart is empty
+        }
+        return Integer.parseInt(countText);
     }
+
+    public void verifyCartCountIncrementAfterProductAdded(String productName) {
+        int beforeCount = getCartCount(driver);
+        System.out.println("🛒 Cart count before click: " + beforeCount);
+
+        // Click the Add to Cart button
+        clickAddToCartBtnSpecProduct(productName);
+        getProductAddedSuccessMsg();
+
+        // Wait until the cart count increases
+        new WebDriverWait(driver, Duration.ofSeconds(5)).until(d -> {
+            int afterCount = getCartCount(driver);
+            return afterCount > beforeCount;
+        });
+
+        int afterCount = getCartCount(driver);
+        System.out.println("🛒 Cart count after click: " + afterCount);
+
+        if (afterCount == beforeCount + 1) {
+            System.out.println("✅ Cart count incremented successfully.");
+        } else {
+            throw new AssertionError("❌ Cart count did not increment as expected!");
+        }
+    }
+
+
 }
 
 

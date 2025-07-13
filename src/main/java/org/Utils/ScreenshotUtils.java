@@ -1,5 +1,6 @@
 package org.Utils;
 
+import org.BaseComponent.BaseClass;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -16,31 +17,23 @@ import static org.BaseComponent.BaseClass.driver;
 public class ScreenshotUtils {
 
 
-    public static String takeScreenshot(WebDriver driver, String fileName) {
+    public static String takeScreenshot(String fileName) {
+        WebDriver driver = BaseClass.getDriver(); // Thread-safe
         if (driver == null) {
             throw new RuntimeException("❌ WebDriver instance is null. Cannot capture screenshot.");
         }
         try {
-            // Take screenshot
             File srcFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-
-            // Define path
             String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
             String relativePath = "screenshots/" + fileName + "_" + timestamp + ".png";
             File destFile = new File(System.getProperty("user.dir"), relativePath);
-
-            // Create parent folders
             destFile.getParentFile().mkdirs();
-
-            // Save screenshot
             Files.copy(srcFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-            System.out.println("📸 Screenshot saved at: " + destFile.getAbsolutePath());
-            return relativePath; // return relative path for report
-        } catch (Exception e) {
-            System.err.println("❌ Failed to save screenshot: " + e.getMessage());
-            return null;
+            return relativePath;
+        } catch (IOException e) {
+            throw new RuntimeException("❌ Failed to save screenshot: " + e.getMessage(), e);
         }
     }
+
 
 }

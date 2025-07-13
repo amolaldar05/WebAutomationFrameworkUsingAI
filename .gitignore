@@ -81,4 +81,7 @@ reports/*.html
 
 # Test output
 test-output/
-surefire-reports/src/main/java/org/resources/config.properties
+surefire-reports/
+
+# Temporary files
+src/main/java/org/resources/config.properties

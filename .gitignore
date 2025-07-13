@@ -86,4 +86,4 @@ surefire-reports/
 # secrete cred files ignored
  src/main/java/org/resources/secretsConfig.properties
 
-screenshots
+screenshots/

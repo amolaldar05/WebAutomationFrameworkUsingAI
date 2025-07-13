@@ -6,47 +6,65 @@ import java.util.Properties;
 
 public class ConfigReader {
 
-    private static Properties properties;
+    private static final Properties configProperties = new Properties();  // non-sensitive
+    private static final Properties secretProperties = new Properties();  // sensitive
 
     static {
-        properties = new Properties();
         try {
+            // Load non-sensitive config
             String configFilePath = System.getProperty("user.dir") + "/src/main/java/org/resources/config.properties";
-            FileInputStream fis = new FileInputStream(configFilePath);
-            properties.load(fis);
-            fis.close();
+            FileInputStream configFis = new FileInputStream(configFilePath);
+            configProperties.load(configFis);
+            configFis.close();
+            System.out.println("✅ Loaded non-sensitive config.properties");
+
+            // Load sensitive config
+            String secretFilePath = System.getProperty("user.dir") + "/src/main/java/org/resources/secretsConfig.properties";
+            FileInputStream secretFis = new FileInputStream(secretFilePath);
+            secretProperties.load(secretFis);
+            secretFis.close();
+            System.out.println("✅ Loaded sensitive secrets.properties");
+
         } catch (IOException e) {
-            System.err.println("⚠️ Could not load config.properties file: " + e.getMessage());
-            System.err.println("👉 Assuming environment variables will be used for configuration.");
+            System.err.println("⚠️ Could not load config or secrets file: " + e.getMessage());
+            System.err.println("👉 Assuming environment variables or Jenkins injected secrets will be used.");
         }
     }
 
-    // Helper: Get value from ENV or fallback to config.properties
+    /**
+     * Helper method to fetch key from:
+     * 1️⃣ Jenkins Environment Variable (highest priority)
+     * 2️⃣ secrets.properties (for sensitive)
+     * 3️⃣ config.properties (non-sensitive)
+     */
     private static String getValue(String key, boolean isSensitive) {
-        String envValue = System.getenv(key); // Jenkins ENV variable
+        // Priority 1: ENV/Jenkins injected variables
+        String envValue = System.getenv(key);
         if (envValue != null && !envValue.trim().isEmpty()) {
-            if (!isSensitive) {
-                System.out.println("🔑 Loaded from ENV: " + key + " = " + envValue);
-            } else {
-                System.out.println("🔐 Loaded sensitive value from ENV: " + key);
-            }
+            System.out.println((isSensitive ? "🔐" : "🔑") + " Loaded from ENV: " + key);
             return envValue;
         }
 
-        String propValue = properties.getProperty(key);
-        if (propValue != null && !propValue.trim().isEmpty()) {
-            if (!isSensitive) {
-                System.out.println("📖 Loaded from config.properties: " + key + " = " + propValue);
-            } else {
-                System.out.println("🔐 Loaded sensitive value from config.properties: " + key);
+        // Priority 2: secrets.properties (if sensitive)
+        if (isSensitive) {
+            String secretValue = secretProperties.getProperty(key);
+            if (secretValue != null && !secretValue.trim().isEmpty()) {
+                System.out.println("🔐 Loaded from secrets.properties: " + key);
+                return secretValue;
             }
-            return propValue;
         }
 
-        throw new RuntimeException("❌ Configuration key '" + key + "' not found in ENV or config.properties");
+        // Priority 3: config.properties (non-sensitive)
+        String configValue = configProperties.getProperty(key);
+        if (configValue != null && !configValue.trim().isEmpty()) {
+            System.out.println((isSensitive ? "🔐" : "📖") + " Loaded from config.properties: " + key);
+            return configValue;
+        }
+
+        throw new RuntimeException("❌ Configuration key '" + key + "' not found in ENV, secrets.properties, or config.properties");
     }
 
-    // Browser config
+    // Non-sensitive getters
     public static String getBrowser() {
         return getValue("browser", false);
     }
@@ -67,7 +85,6 @@ public class ConfigReader {
         return getValue("browserVersion", false);
     }
 
-    // Extent report
     public static String getTesterName() {
         return getValue("testerName", false);
     }
@@ -80,7 +97,11 @@ public class ConfigReader {
         return getValue("environment", false);
     }
 
-    // Sensitive data
+    public static boolean isHeadless() {
+        return Boolean.parseBoolean(getValue("headless", false));
+    }
+
+    // Sensitive getters
     public static String getLoginEmail() {
         return getValue("loginUserEmail", true);
     }
@@ -90,7 +111,7 @@ public class ConfigReader {
     }
 
     public static String getDbUrl() {
-        return getValue("dbURL", false);
+        return getValue("dbURL", true);
     }
 
     public static String getDbUsername() {
@@ -99,9 +120,5 @@ public class ConfigReader {
 
     public static String getDbPassword() {
         return getValue("dbPassword", true);
-    }
-
-    public static boolean isHeadless() {
-        return Boolean.parseBoolean(getValue("headless", false));
     }
 }

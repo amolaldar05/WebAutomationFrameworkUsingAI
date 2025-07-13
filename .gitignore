@@ -83,5 +83,7 @@ reports/*.html
 test-output/
 surefire-reports/
 
-# Temporary files
-src/main/java/org/resources/secretsConfig.properties
+# secrete cred files ignored
+ src/main/java/org/resources/secretsConfig.properties
+
+screenshots

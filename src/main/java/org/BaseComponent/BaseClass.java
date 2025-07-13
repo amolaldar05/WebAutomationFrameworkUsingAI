@@ -9,8 +9,7 @@ import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.*;
 
 import java.time.Duration;
 
@@ -18,15 +17,28 @@ public class BaseClass {
 
     public static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
 
-    @BeforeClass(alwaysRun = true)
-    public void setUp() {
-        initializeDriver();
+    @BeforeMethod(alwaysRun = true)
+    @Parameters({"browser"}) // Reads browser parameter from TestNG XML
+    public void setUp(@Optional String browserFromXML) {
+        initializeDriver(browserFromXML);
     }
 
-    public void initializeDriver() {
-        String browser = ConfigReader.getBrowser().toLowerCase();
+    public void initializeDriver(String browserFromXML) {
+        String browser;
+
+        // ✅ 1. Prefer browser from TestNG XML
+        if (browserFromXML != null && !browserFromXML.trim().isEmpty()) {
+            browser = browserFromXML.toLowerCase();
+            System.out.println("🌐 Browser set from TestNG XML parameter: " + browser);
+        } else {
+            // ✅ 2. Fallback to config.properties
+            browser = ConfigReader.getBrowser().toLowerCase();
+            System.out.println("📖 Browser set from config.properties: " + browser);
+        }
+
         String url = ConfigReader.getBaseUrl();
-        boolean isHeadless = Boolean.parseBoolean(ConfigReader.getProperty("headless"));
+        boolean isHeadless = ConfigReader.isHeadless();
+
         int timeout = ConfigReader.getTimeout(); // read timeout in seconds
 
         switch (browser) {
@@ -55,7 +67,7 @@ public class BaseClass {
                 break;
 
             default:
-                throw new IllegalArgumentException("❌ Browser not supported: " + browser);
+                throw new IllegalArgumentException("❌ Unsupported browser: " + browser);
         }
 
         // Common driver settings
@@ -69,10 +81,13 @@ public class BaseClass {
     }
 
     public static WebDriver getDriver() {
+        if (driver.get() == null) {
+            throw new IllegalStateException("❌ WebDriver not initialized for this thread!");
+        }
         return driver.get();
     }
 
-    @AfterClass(alwaysRun = true)
+    @AfterMethod( alwaysRun = true)
     public void tearDown() {
         if (driver.get() != null) {
             getDriver().quit();

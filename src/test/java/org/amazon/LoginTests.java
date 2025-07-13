@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.BaseComponent.BaseClass;
+import org.PageObjects.HeaderObjects;
 import org.PageObjects.LoginPageObjects;
 import org.PageObjects.ProductListingPageObjects;
 import org.Utils.JsonUtils;
@@ -22,12 +23,13 @@ public class LoginTests extends BaseClass {
 	private LoginPageObjects loginPage;
 	JsonUtils jsonUtils;
 	SoftAssert softAssert = new SoftAssert();
+	HeaderObjects headerObjects;
 	ProductListingPageObjects productListingPageObjects;
 
-	@BeforeMethod
+	@BeforeMethod(alwaysRun = true)
 	public void setUpPage() throws IOException {
 		loginPage = new LoginPageObjects(getDriver());
-		jsonUtils = new JsonUtils("src/main/java/org/resources/testdata.json");
+		jsonUtils = new JsonUtils(System.getProperty("user.dir")+"/src/main/java/org/resources/testdata.json");
 	}
 
 
@@ -52,7 +54,9 @@ public class LoginTests extends BaseClass {
 		loginPage.clickLogin();
 		String loginSucMsg = loginPage.getSuccessMsg();
 		softAssert.assertEquals(loginSucMsg,"Login Successfully");
-		String logoutMsg=productListingPageObjects.clickHeaderMenu("Sign Out");
+		productListingPageObjects.clickHeaderMenu("Sign Out");
+		headerObjects = new HeaderObjects(getDriver());
+		String logoutMsg=headerObjects.getLogoutSuccessMsg();
 		softAssert.assertEquals(logoutMsg, "Logout Successfully");
 		softAssert.assertAll();
 	}

@@ -1,0 +1,19 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="AmazonWebAutomation_SmokeSuite" parallel="classes" thread-count="3">
+    <listeners>
+        <listener class-name="org.Utils.TestListener"/>
+    </listeners>
+
+    <test name="SmokeTests">
+        <groups>
+            <run>
+                <include name="smoke" />
+            </run>
+        </groups>
+        <classes>
+            <class name="org.amazon.LoginTests"/>
+            <class name="org.amazon.RegistrationTests"/>
+            <class name="org.amazon.DashboardTests"/>
+        </classes>
+    </test>
+</suite>

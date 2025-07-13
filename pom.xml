@@ -3,11 +3,12 @@
     make sure at least one test method in your included classes is annotated with the matching group.
     If no test methods match the group, TestNG will throw a NullPointerException at runtime.
     To run all tests, use -P all or do not specify a profile.
-  -->
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <groupId>org.amazon</groupId>
   <artifactId>WebAutomatiom_Framework_AIAgent</artifactId>
   <version>1.0-SNAPSHOT</version>
@@ -53,24 +54,21 @@
       <artifactId>poi-ooxml</artifactId>
       <version>5.4.0</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/com.aventstack/extentreports -->
     <dependency>
       <groupId>com.aventstack</groupId>
       <artifactId>extentreports</artifactId>
       <version>5.1.2</version>
     </dependency>
-    <!-- HikariCP (a high-performance JDBC connection pool: make sure thread pool parallel testing):-->
     <dependency>
       <groupId>com.zaxxer</groupId>
       <artifactId>HikariCP</artifactId>
       <version>5.1.0</version>
     </dependency>
-
-
   </dependencies>
 
   <build>
     <plugins>
+      <!-- Compiler plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -80,16 +78,17 @@
           <target>21</target>
         </configuration>
       </plugin>
+
+      <!-- Surefire plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.2.5</version>
         <configuration>
+          <!-- Dynamically pass TestNG suite XML -->
           <suiteXmlFiles>
-            <suiteXmlFile>testng.xml</suiteXmlFile>
+            <suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
           </suiteXmlFiles>
-          <!--suppress UnresolvedMavenProperty -->
-          <groups>${groups}</groups>
         </configuration>
       </plugin>
     </plugins>
@@ -99,31 +98,28 @@
     <profile>
       <id>regression</id>
       <properties>
-        <groups>regression</groups>
+        <suiteXmlFile>testNG_files/regression_testNG.xml</suiteXmlFile>
       </properties>
     </profile>
+
     <profile>
       <id>smoke</id>
       <properties>
-        <groups>smoke</groups>
+        <suiteXmlFile>testNG_files/testng_Parallel_Cross_Browser.xml</suiteXmlFile>
       </properties>
     </profile>
+
     <profile>
       <id>sanity</id>
       <properties>
-        <groups>sanity</groups>
+        <suiteXmlFile>testNG_files/regression_testNG.xml</suiteXmlFile>
       </properties>
     </profile>
+
     <profile>
       <id>e2e</id>
       <properties>
-        <groups>e2e</groups>
-      </properties>
-    </profile>
-    <profile>
-      <id>all</id>
-      <properties>
-        <groups> </groups>
+        <suiteXmlFile>testNG_files/testng_Parallel_Cross_Browser.xml</suiteXmlFile>
       </properties>
     </profile>
   </profiles>

@@ -32,7 +32,7 @@ public class TestListener implements ITestListener {
     public void onTestFailure(ITestResult result) {
         String methodName = result.getMethod().getMethodName();
         try {
-            String screenshotPath = ScreenshotUtils.takeScreenshot(BaseClass.getDriver(),
+            String screenshotPath = ScreenshotUtils.takeScreenshot(
                     methodName + "_FAILED_" + System.currentTimeMillis()
             );
             test.get()

@@ -84,4 +84,4 @@ test-output/
 surefire-reports/
 
 # Temporary files
-src/main/java/org/resources/config.properties
+src/main/java/org/resources/secretsConfig.properties

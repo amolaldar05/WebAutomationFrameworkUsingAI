@@ -2,6 +2,7 @@
 <suite name="AmazonWebAutomation_SmokeSuite" parallel="classes" thread-count="3">
     <listeners>
         <listener class-name="org.Utils.TestListener"/>
+        <listener class-name="org.Utils.RetryListener"/>
     </listeners>
 
     <test name="SmokeTests">

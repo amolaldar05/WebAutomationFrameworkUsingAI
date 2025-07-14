@@ -2,6 +2,7 @@
 <suite name="AmazonWebAutomationSuite" parallel="tests" thread-count="2">
     <listeners>
         <listener class-name="org.Utils.TestListener"/>
+        <listener class-name="org.Utils.RetryListener"/>
     </listeners>
 
     <!-- Run tests on Chrome -->

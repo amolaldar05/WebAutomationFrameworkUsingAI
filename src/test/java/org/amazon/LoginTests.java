@@ -33,7 +33,7 @@ public class LoginTests extends BaseClass {
 	}
 
 
-	@Test(priority = 0, groups = {"regression"})
+	@Test(priority = 0, groups = {"regression","smoke"})
 	public void validLoginTest() throws IOException, InterruptedException, SQLException {
 		ThrottleManager.waitIfNeeded();
 		 productListingPageObjects = new ProductListingPageObjects(getDriver());

@@ -13,7 +13,6 @@
         <classes>
             <class name="org.amazon.LoginTests"/>
             <class name="org.amazon.RegistrationTests"/>
-            <class name="org.amazon.DashboardTests"/>
         </classes>
     </test>
 </suite>

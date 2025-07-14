@@ -105,14 +105,14 @@
     <profile>
       <id>smoke</id>
       <properties>
-        <suiteXmlFile>testNG_files/testng_Parallel_Cross_Browser.xml</suiteXmlFile>
+        <suiteXmlFile>testNG_files/smoke_testNG.xml</suiteXmlFile>
       </properties>
     </profile>
 
     <profile>
       <id>sanity</id>
       <properties>
-        <suiteXmlFile>testNG_files/regression_testNG.xml</suiteXmlFile>
+        <suiteXmlFile>testNG_files/sanity_testNG.xml</suiteXmlFile>
       </properties>
     </profile>
 

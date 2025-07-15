@@ -26,14 +26,14 @@ public class BaseClass {
     public void initializeDriver(String browserFromXML) {
         String browser;
 
-        // ✅ 1. Prefer browser from TestNG XML
+        // 1. Prefer browser from TestNG XML
         if (browserFromXML != null && !browserFromXML.trim().isEmpty()) {
             browser = browserFromXML.toLowerCase();
-            System.out.println("🌐 Browser set from TestNG XML parameter: " + browser);
+            System.out.println("Browser set from TestNG XML parameter: " + browser);
         } else {
-            // ✅ 2. Fallback to config.properties
+            // 2. Fallback to config.properties
             browser = ConfigReader.getBrowser().toLowerCase();
-            System.out.println("📖 Browser set from config.properties: " + browser);
+            System.out.println("Browser set from config.properties: " + browser);
         }
 
         String url = ConfigReader.getBaseUrl();
@@ -67,7 +67,7 @@ public class BaseClass {
                 break;
 
             default:
-                throw new IllegalArgumentException("❌ Unsupported browser: " + browser);
+                throw new IllegalArgumentException("Unsupported browser: " + browser);
         }
 
         // Common driver settings
@@ -82,7 +82,7 @@ public class BaseClass {
 
     public static WebDriver getDriver() {
         if (driver.get() == null) {
-            throw new IllegalStateException("❌ WebDriver not initialized for this thread!");
+            throw new IllegalStateException("WebDriver not initialized for this thread!");
         }
         return driver.get();
     }

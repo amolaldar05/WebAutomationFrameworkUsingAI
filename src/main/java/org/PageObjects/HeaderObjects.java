@@ -38,6 +38,9 @@ public class HeaderObjects {
 
     public void clickHeaderMenu(String menuName) {
         wait.until(ExpectedConditions.visibilityOfAllElements(headerMenus));
+        if (headerMenus.isEmpty()) {
+            throw new RuntimeException("Header menus are not loaded or empty.");
+        }
         headerMenus.stream()
                 .filter(menu -> menu.getText().trim().equalsIgnoreCase(menuName.trim()))
                 .findFirst()

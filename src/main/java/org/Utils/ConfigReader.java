@@ -66,7 +66,7 @@ public class ConfigReader {
         }
 
 
-        throw new RuntimeException("❌ Configuration key '" + key + "' not found in ENV, secretsConfig.properties, or config.properties");
+        throw new RuntimeException("Configuration key '" + key + "' not found in ENV, secretsConfig.properties, or config.properties");
 
     }
 
@@ -106,6 +106,10 @@ public class ConfigReader {
     public static boolean isHeadless() {
         return Boolean.parseBoolean(getValue("headless", false));
     }
+    public static String getRunMode() {
+        return getValue("runMode", false); // "local" or "grid"
+    }
+
 
     // Sensitive getters
     public static String getLoginEmail() {
@@ -126,5 +130,8 @@ public class ConfigReader {
 
     public static String getDbPassword() {
         return getValue("dbPassword", true);
+    }
+    public static String getHubUrl() {
+        return getValue("hubUrl", true); // URL for Selenium Grid
     }
 }

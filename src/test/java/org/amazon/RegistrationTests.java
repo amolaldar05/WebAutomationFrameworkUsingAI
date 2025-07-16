@@ -1,5 +1,6 @@
 package org.amazon;
 
+import org.BaseComponent.BaseClass2;
 import org.PageObjects.LoginPageObjects;
 import org.PageObjects.RegistrationPageObjects;
 import org.BaseComponent.BaseClass;

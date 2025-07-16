@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.BaseComponent.BaseClass;
+import org.BaseComponent.BaseClass2;
 import org.PageObjects.HeaderObjects;
 import org.PageObjects.LoginPageObjects;
 import org.PageObjects.ProductListingPageObjects;

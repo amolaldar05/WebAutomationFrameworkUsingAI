@@ -1,0 +1,50 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="AmazonWebAutomation_RegressionSuite" parallel="classes" thread-count="5">
+    <listeners>
+        <listener class-name="org.Utils.TestListener"/>
+        <listener class-name="org.Utils.RetryListener"/>
+    </listeners>
+
+    <!-- Regression Tests on Chrome Node -->
+    <test name="RegressionTests_ChromeGrid">
+        <parameter name="browser" value="chrome"/>
+        <parameter name="runMode" value="grid"/>
+        <parameter name="hubUrl" value="http://192.168.0.102:4444"/>
+        <classes>
+            <class name="org.amazon.LoginTests"/>
+            <class name="org.amazon.RegistrationTests"/>
+        </classes>
+    </test>
+
+    <!-- Regression Tests on Firefox Node -->
+    <test name="RegressionTests_FirefoxGrid">
+        <parameter name="browser" value="firefox"/>
+        <parameter name="runMode" value="grid"/>
+        <parameter name="hubUrl" value="http://192.168.0.102:4444"/>
+        <classes>
+            <class name="org.amazon.LoginTests"/>
+            <class name="org.amazon.RegistrationTests"/>
+        </classes>
+    </test>
+
+    <!-- Regression Tests on Firefox Node -->
+    <test name="RegressionTests_EdgeGrid">
+        <parameter name="browser" value="edge"/>
+        <parameter name="runMode" value="grid"/>
+        <parameter name="hubUrl" value="http://192.168.0.102:4444"/>
+        <classes>
+            <class name="org.amazon.LoginTests"/>
+            <class name="org.amazon.RegistrationTests"/>
+        </classes>
+    </test>
+
+    <!-- Optional: Local Run for comparison -->
+    <test name="RegressionTests_LocalChrome">
+        <parameter name="browser" value="chrome"/>
+        <parameter name="runMode" value="local"/>
+        <classes>
+            <class name="org.amazon.LoginTests"/>
+            <class name="org.amazon.RegistrationTests"/>
+        </classes>
+    </test>
+</suite>

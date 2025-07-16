@@ -18,7 +18,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
 
-public class BaseClass {
+public class BaseClass2 {
 
     public static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
 

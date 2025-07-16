@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.BaseComponent.BaseClass;
+import org.BaseComponent.BaseClass2;
 import org.PageObjects.HeaderObjects;
 import org.PageObjects.LoginPageObjects;
 import org.PageObjects.ProductListingPageObjects;
@@ -33,7 +34,7 @@ public class LoginTests extends BaseClass {
 	}
 
 
-	@Test(priority = 0, groups = {"regression"})
+	@Test(priority = 0, groups = {"regression","smoke"})
 	public void validLoginTest() throws IOException, InterruptedException, SQLException {
 		ThrottleManager.waitIfNeeded();
 		 productListingPageObjects = new ProductListingPageObjects(getDriver());

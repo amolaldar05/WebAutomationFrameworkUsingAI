@@ -19,11 +19,13 @@ public class ConfigReader {
             System.out.println("✅ Loaded non-sensitive config.properties");
 
             // Load sensitive config
-            String secretFilePath = System.getProperty("user.dir") + "/src/main/java/org/resources/secretsConfig.properties";
-            FileInputStream secretFis = new FileInputStream(secretFilePath);
-            secretProperties.load(secretFis);
-            secretFis.close();
-            System.out.println("✅ Loaded sensitive secrets.properties");
+
+            String secretsConfigFilePath = System.getProperty("user.dir") + "/src/main/java/org/resources/secretsConfig.properties";
+            FileInputStream secretsConfigFis = new FileInputStream(secretsConfigFilePath);
+            secretProperties.load(secretsConfigFis);
+            secretsConfigFis.close();
+            System.out.println("✅ Loaded sensitive secretsConfig.properties");
+
 
         } catch (IOException e) {
             System.err.println("⚠️ Could not load config or secrets file: " + e.getMessage());
@@ -49,7 +51,9 @@ public class ConfigReader {
         if (isSensitive) {
             String secretValue = secretProperties.getProperty(key);
             if (secretValue != null && !secretValue.trim().isEmpty()) {
-                System.out.println("🔐 Loaded from secrets.properties: " + key);
+
+                System.out.println("🔐 Loaded from secretsConfig.properties: " + key);
+
                 return secretValue;
             }
         }
@@ -61,7 +65,9 @@ public class ConfigReader {
             return configValue;
         }
 
-        throw new RuntimeException("❌ Configuration key '" + key + "' not found in ENV, secrets.properties, or config.properties");
+
+        throw new RuntimeException("Configuration key '" + key + "' not found in ENV, secretsConfig.properties, or config.properties");
+
     }
 
     // Non-sensitive getters
@@ -100,6 +106,10 @@ public class ConfigReader {
     public static boolean isHeadless() {
         return Boolean.parseBoolean(getValue("headless", false));
     }
+    public static String getRunMode() {
+        return getValue("runMode", false); // "local" or "grid"
+    }
+
 
     // Sensitive getters
     public static String getLoginEmail() {
@@ -120,5 +130,8 @@ public class ConfigReader {
 
     public static String getDbPassword() {
         return getValue("dbPassword", true);
+    }
+    public static String getHubUrl() {
+        return getValue("hubUrl", true); // URL for Selenium Grid
     }
 }

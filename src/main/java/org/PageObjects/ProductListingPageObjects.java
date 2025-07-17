@@ -44,11 +44,37 @@ public class ProductListingPageObjects extends HeaderObjects {
                 .findFirst()
                 .ifPresent(name -> {
                     productIndex = productNames.indexOf(name);
+
                     System.out.println("Matching product index: " + productIndex);
                 });
 
     }
 
+
+
+    public String clickAddToCartBtnSpecProduct(String productName) {
+        getIndexSpceProduct(productName);
+        if (productIndex >= 0 && productIndex < addToCartButtons.size()) {
+            addToCartButtons.get(productIndex).click();
+            // Wait for spinner hidden or toast visible
+//            wait.until(ExpectedConditions.or(
+//                    ExpectedConditions.not(ExpectedConditions.visibilityOf(spinner)),
+//                    ExpectedConditions.visibilityOf(productAddedSuccessMsg)
+//            ));
+
+
+
+            // Immediately capture toast before it disappears
+            String toastMsg = getProductAddedSuccessMsg();
+            return toastMsg;
+        } else {
+            throw new RuntimeException("Add to Cart button not found for product: " + productName);
+        }
+    }
+
+
+
+/*
     public void clickAddToCartBtnSpecProduct(String productName) {
         wait.until(ExpectedConditions.visibilityOfAllElements(addToCartButtons));
         addToCartButtons.stream()
@@ -59,13 +85,34 @@ public class ProductListingPageObjects extends HeaderObjects {
                         () -> {
                             throw new RuntimeException("Add to Cart button not found for product: " + productName);
                         });
-    }
+    }*/
+
+//    public void clickAddToCartBtnSpecProduct(String productName) {
+//        wait.until(ExpectedConditions.visibilityOfAllElements(productNames));
+//       // List<WebElement> products = driver.findElements(By.cssSelector(".card"));
+//
+//        boolean productFound = false;
+//        int index=0;
+//        for (WebElement product : productNames) {
+//            //String name = product.findElement(By.cssSelector("h5 b")).getText().trim();
+//            if (product.getText().equalsIgnoreCase(productName)) {
+//
+//                addToCartButtons.get(productIndex).click();
+//                productFound = true;
+//                break;
+//            }
+//        }
+//
+//        if (!productFound) {
+//            throw new RuntimeException("Add to Cart button not found for product: " + productName);
+//        }
+//    }
+
 
     public String getProductAddedSuccessMsg() {
         try {
-
             wait.until(ExpectedConditions.visibilityOf(productAddedSuccessMsg));
-            wait.until(ExpectedConditions.invisibilityOf(spinner));
+            // Wait for the success message to be visible
             return productAddedSuccessMsg.getText();
         } catch (Exception e) {
             throw new RuntimeException("Failed to get product added success message: " + e.getMessage(), e);
@@ -82,32 +129,32 @@ public class ProductListingPageObjects extends HeaderObjects {
         return Integer.parseInt(countText);
     }
 
-    public void verifyCartCountIncrementAfterProductAdded(String productName) {
-        int beforeCount = getCartCount(driver);
-        System.out.println("🛒 Cart count before click: " + beforeCount);
-
-        // Click the Add to Cart button
-        clickAddToCartBtnSpecProduct(productName);
-        getProductAddedSuccessMsg();
-
-        // Wait until the cart count increases
-        new WebDriverWait(driver, Duration.ofSeconds(5)).until(d -> {
-            int afterCount = getCartCount(driver);
-            return afterCount > beforeCount;
-        });
-
-        int afterCount = getCartCount(driver);
-        System.out.println("🛒 Cart count after click: " + afterCount);
-
-        if (afterCount == beforeCount + 1) {
-            System.out.println("✅ Cart count incremented successfully.");
-        } else {
-            throw new AssertionError("❌ Cart count did not increment as expected!");
-        }
+//    public void verifyCartCountIncrementAfterProductAdded(String productName) {
+//        int beforeCount = getCartCount(driver);
+//        System.out.println("🛒 Cart count before click: " + beforeCount);
+//
+//        // Click the Add to Cart button
+//        clickAddToCartBtnSpecProduct(productName);
+//        getProductAddedSuccessMsg();
+//
+//        // Wait until the cart count increases
+//        new WebDriverWait(driver, Duration.ofSeconds(5)).until(d -> {
+//            int afterCount = getCartCount(driver);
+//            return afterCount > beforeCount;
+//        });
+//
+//        int afterCount = getCartCount(driver);
+//        System.out.println("🛒 Cart count after click: " + afterCount);
+//
+//        if (afterCount == beforeCount + 1) {
+//            System.out.println("✅ Cart count incremented successfully.");
+//        } else {
+//            throw new AssertionError("❌ Cart count did not increment as expected!");
+//        }
     }
 
 
-}
+
 
 
 

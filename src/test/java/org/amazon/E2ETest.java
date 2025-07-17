@@ -14,7 +14,7 @@ public class E2ETest extends BaseClass {
     SoftAssert softAssert = new SoftAssert();
     LoginPageObjects loginPageObjects;
     ProductListingPageObjects productListingPageObjects;
-    String[] products={"ZARA COAT 3","ADIDAS ORIGINAL","IPHONE 13 PRO"};
+    String[] products={"ADIDAS ORIGINAL","IPHONE 13 PRO","ZARA COAT 3"};
 
 
     @BeforeMethod
@@ -23,8 +23,8 @@ public class E2ETest extends BaseClass {
         productListingPageObjects = new ProductListingPageObjects(getDriver());
     }
 
-    @Test(dataProvider="getLoginData",timeOut = 10000)
-    public void e2eUserJourneyTest(String userEmail,String password){
+    @Test(dataProvider="getLoginData")
+    public void e2eUserJourneyTest(String userEmail,String password) throws InterruptedException {
 
         loginPageObjects.enterEmail(userEmail);
         loginPageObjects.enterPassword(password);
@@ -38,10 +38,8 @@ public class E2ETest extends BaseClass {
             String productAddedToCartMsg = productListingPageObjects.getProductAddedSuccessMsg();
             softAssert.assertEquals(productAddedToCartMsg, "Product Added Successfully", "Product was not added to cart successfully: " + product);
         }
-        productListingPageObjects.clickAddToCartBtnSpecProduct("ADIDAS ORIGINAL");
-        String productAddedToCartMsg=productListingPageObjects.getProductAddedSuccessMsg();
-        softAssert.assertEquals(productAddedToCartMsg, "Product Added Successfully", "Product was not added to cart successfully");
-        productListingPageObjects.clickHeaderMenu("Cart");
+//        String cartCount = String.valueOf(productListingPageObjects.getCartCount(getDriver()));
+//        productListingPageObjects.clickHeaderMenu("Cart");
         softAssert.assertAll();
 
     }

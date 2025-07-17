@@ -155,5 +155,12 @@
         <suiteXmlFile>testNG_files/testng_Parallel_Cross_Browser.xml</suiteXmlFile>
       </properties>
     </profile>
+
+    <profile>
+      <id>grid</id>
+      <properties>
+        <suiteXmlFile>testNG_files/grid_testNG.xml</suiteXmlFile>
+      </properties>
+    </profile>
   </profiles>
 </project>

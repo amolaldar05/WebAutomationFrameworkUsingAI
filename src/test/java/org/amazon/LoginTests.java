@@ -30,7 +30,7 @@ public class LoginTests extends BaseClass {
 	@BeforeMethod(alwaysRun = true)
 	public void setUpPage() throws IOException {
 		loginPage = new LoginPageObjects(getDriver());
-		jsonUtils = new JsonUtils(System.getProperty("user.dir")+"/src/main/java/org/resources/testdata.json");
+		jsonUtils = new JsonUtils(System.getProperty("user.dir")+"/src/main/java/org/TestData/testdata.json");
 	}
 
 

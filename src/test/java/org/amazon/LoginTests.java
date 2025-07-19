@@ -54,11 +54,11 @@ public class LoginTests extends BaseClass {
 		loginPage.enterPassword(password);
 		loginPage.clickLogin();
 		String loginSucMsg = loginPage.getSuccessMsg();
-		softAssert.assertEquals(loginSucMsg,"Login Successfully");
+		softAssert.assertEquals(loginSucMsg.trim(),"Login Successfully");
 		productListingPageObjects.clickHeaderMenu("Sign Out");
 		headerObjects = new HeaderObjects(getDriver());
 		String logoutMsg=headerObjects.getLogoutSuccessMsg();
-		softAssert.assertEquals(logoutMsg, "Logout Successfully");
+		softAssert.assertEquals(logoutMsg.trim(), "Logout Successfully");
 		softAssert.assertAll();
 	}
 
@@ -73,7 +73,7 @@ public class LoginTests extends BaseClass {
 		loginPage.enterPassword(password);
 		loginPage.clickLogin();
 		String errorMsg = loginPage.getErrorMsg();
-		softAssert.assertEquals(errorMsg, "Incorrect email or password.");
+		softAssert.assertEquals(errorMsg.trim(), "Incorrect email or password.");
 		softAssert.assertAll();
 	}
 

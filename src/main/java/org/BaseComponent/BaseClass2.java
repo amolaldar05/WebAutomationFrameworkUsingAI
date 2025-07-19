@@ -2,16 +2,14 @@ package org.BaseComponent;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.Utils.ConfigReader;
+import org.Utils.SeleniumGridManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Optional;
-import org.testng.annotations.Parameters;
+import org.testng.annotations.*;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -21,6 +19,20 @@ import java.time.Duration;
 public class BaseClass2 {
 
     public static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
+    private static boolean gridStarted = false;
+
+    @BeforeSuite(alwaysRun = true)
+    public void startGridIfNeeded() {
+        if (ConfigReader.getRunMode().equalsIgnoreCase("grid") && !gridStarted) {
+            String seleniumJar = ConfigReader.getSeleniumServerJarPath(); // add this in config.properties
+            String hubIp = ConfigReader.getHubIp();                 // add in config.properties
+            int hubPort = Integer.parseInt(ConfigReader.getHubPort());                // add in config.properties
+
+            SeleniumGridManager.startHub(seleniumJar, hubPort);
+            SeleniumGridManager.startNode(seleniumJar, hubIp, hubPort);
+            gridStarted = true;
+        }
+    }
 
     @BeforeMethod(alwaysRun = true)
     @Parameters({"browser", "runMode", "hubUrl"}) // runMode: local or grid
@@ -32,16 +44,9 @@ public class BaseClass2 {
     }
 
     public void initializeDriver(String browserFromXML, String runModeFromXML, String hubUrlFromXML) throws MalformedURLException, URISyntaxException {
-        String browser;
-
-        // Browser selection
-        if (browserFromXML != null && !browserFromXML.trim().isEmpty()) {
-            browser = browserFromXML.toLowerCase();
-            System.out.println("Browser set from TestNG XML: " + browser);
-        } else {
-            browser = ConfigReader.getBrowser().toLowerCase();
-            System.out.println("Browser set from config.properties: " + browser);
-        }
+        String browser = (browserFromXML != null && !browserFromXML.trim().isEmpty())
+                ? browserFromXML.toLowerCase()
+                : ConfigReader.getBrowser().toLowerCase();
 
         String runMode = (runModeFromXML != null && !runModeFromXML.trim().isEmpty())
                 ? runModeFromXML.toLowerCase()
@@ -57,8 +62,7 @@ public class BaseClass2 {
 
         try {
             if (runMode.equals("grid")) {
-                // Run in Selenium Grid
-                System.out.println("✅ Attempting to run tests on Selenium Grid: " + hubUrl);
+                System.out.println("✅ Running tests on Selenium Grid: " + hubUrl);
 
                 DesiredCapabilities capabilities = new DesiredCapabilities();
 
@@ -91,16 +95,14 @@ public class BaseClass2 {
                         throw new IllegalArgumentException("Unsupported browser for Grid: " + browser);
                 }
 
-                // Try connecting to Grid Hub
                 driver.set(new RemoteWebDriver(new URI(hubUrl).toURL(), capabilities));
             } else {
-                throw new Exception("Skipping Grid setup. Running locally instead.");
+                throw new Exception("Skipping Grid setup. Running locally...");
             }
         } catch (Exception e) {
-            System.err.println("⚠️ Could not connect to Grid Hub. Falling back to local WebDriver...");
+            System.err.println("⚠️ Grid unavailable. Falling back to local WebDriver.");
             System.err.println("Error: " + e.getMessage());
 
-            // Fallback to local execution
             switch (browser) {
                 case "chrome":
                     WebDriverManager.chromedriver().setup();
@@ -131,7 +133,6 @@ public class BaseClass2 {
             }
         }
 
-        // Common settings
         getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(timeout));
         getDriver().manage().window().maximize();
 
@@ -152,6 +153,13 @@ public class BaseClass2 {
         if (driver.get() != null) {
             getDriver().quit();
             driver.remove();
+        }
+    }
+
+    @AfterSuite(alwaysRun = true)
+    public void stopGridIfStarted() {
+        if (gridStarted) {
+            SeleniumGridManager.stopGrid();
         }
     }
 }

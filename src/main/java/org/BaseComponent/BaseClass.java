@@ -2,17 +2,25 @@ package org.BaseComponent;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.Utils.ConfigReader;
+import org.openqa.selenium.SessionNotCreatedException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.safari.SafariDriver;
+import org.openqa.selenium.safari.SafariOptions;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -27,7 +35,6 @@ public class BaseClass {
     public void setUp(@Optional String browserFromXML,
                       @Optional String runModeFromXML,
                       @Optional String hubUrlFromXML) throws MalformedURLException, URISyntaxException {
-
         initializeDriver(browserFromXML, runModeFromXML, hubUrlFromXML);
     }
 
@@ -37,10 +44,10 @@ public class BaseClass {
         // Browser selection
         if (browserFromXML != null && !browserFromXML.trim().isEmpty()) {
             browser = browserFromXML.toLowerCase();
-            System.out.println("Browser set from TestNG XML: " + browser);
+            System.out.println("🌐 Browser set from TestNG XML: " + browser);
         } else {
             browser = ConfigReader.getBrowser().toLowerCase();
-            System.out.println("Browser set from config.properties: " + browser);
+            System.out.println("🌐 Browser set from config.properties: " + browser);
         }
 
         String runMode = (runModeFromXML != null && !runModeFromXML.trim().isEmpty())
@@ -57,7 +64,6 @@ public class BaseClass {
 
         try {
             if (runMode.equals("grid")) {
-                // Run in Selenium Grid
                 System.out.println("✅ Attempting to run tests on Selenium Grid: " + hubUrl);
 
                 DesiredCapabilities capabilities = new DesiredCapabilities();
@@ -79,6 +85,14 @@ public class BaseClass {
                         capabilities.setBrowserName("firefox");
                         break;
 
+                    case "safari":
+                        SafariOptions safariOptions = new SafariOptions();
+                        System.out.println("⚠️ Safari does not support headless mode. Running in normal mode.");
+                        capabilities.setBrowserName("safari");
+                        capabilities.merge(safariOptions);
+                        System.out.println("⚠️ Ensure macOS Grid node has SafariDriver enabled!");
+                        break;
+
                     case "edge":
                         EdgeOptions edgeOptions = new EdgeOptions();
                         if (isHeadless) edgeOptions.addArguments("--headless");
@@ -88,47 +102,24 @@ public class BaseClass {
                         break;
 
                     default:
-                        throw new IllegalArgumentException("Unsupported browser for Grid: " + browser);
+                        throw new IllegalArgumentException("❌ Unsupported browser for Grid: " + browser);
                 }
 
-                // Try connecting to Grid Hub
-                driver.set(new RemoteWebDriver(new URI(hubUrl).toURL(), capabilities));
+                try {
+                    driver.set(new RemoteWebDriver(new URI(hubUrl).toURL(), capabilities));
+                    System.out.println("✅ Connected to Selenium Grid and started browser: " + browser);
+                } catch (Exception gridException) {
+                    System.err.println("⚠️ Grid issue detected (" + gridException.getClass().getSimpleName() + "): " + gridException.getMessage());
+                    System.err.println("➡️ Falling back to local WebDriver for browser: " + browser);
+                    startLocalDriver(browser, isHeadless);
+                }
+
             } else {
-                throw new Exception("Skipping Grid setup. Running locally instead.");
+                System.out.println("⚡ Running tests locally...");
+                startLocalDriver(browser, isHeadless);
             }
         } catch (Exception e) {
-            System.err.println("⚠️ Could not connect to Grid Hub. Falling back to local WebDriver...");
-            System.err.println("Error: " + e.getMessage());
-
-            // Fallback to local execution
-            switch (browser) {
-                case "chrome":
-                    WebDriverManager.chromedriver().setup();
-                    ChromeOptions chromeOptions = new ChromeOptions();
-                    if (isHeadless) chromeOptions.addArguments("--headless=new");
-                    chromeOptions.addArguments("--incognito");
-                    driver.set(new org.openqa.selenium.chrome.ChromeDriver(chromeOptions));
-                    break;
-
-                case "firefox":
-                    WebDriverManager.firefoxdriver().setup();
-                    FirefoxOptions firefoxOptions = new FirefoxOptions();
-                    if (isHeadless) firefoxOptions.addArguments("--headless");
-                    firefoxOptions.addArguments("-private");
-                    driver.set(new org.openqa.selenium.firefox.FirefoxDriver(firefoxOptions));
-                    break;
-
-                case "edge":
-                    WebDriverManager.edgedriver().setup();
-                    EdgeOptions edgeOptions = new EdgeOptions();
-                    if (isHeadless) edgeOptions.addArguments("--headless");
-                    edgeOptions.addArguments("--inprivate");
-                    driver.set(new org.openqa.selenium.edge.EdgeDriver(edgeOptions));
-                    break;
-
-                default:
-                    throw new IllegalArgumentException("Unsupported browser: " + browser);
-            }
+            throw new RuntimeException("❌ Failed to initialize WebDriver: " + e.getMessage(), e);
         }
 
         // Common settings
@@ -140,9 +131,83 @@ public class BaseClass {
         }
     }
 
+    private void startLocalDriver(String browser, boolean isHeadless) {
+        switch (browser) {
+            case "chrome":
+                WebDriverManager.chromedriver().setup();
+                ChromeOptions chromeOptions = new ChromeOptions();
+                if (isHeadless) chromeOptions.addArguments("--headless=new");
+                chromeOptions.addArguments("--incognito");
+                driver.set(new ChromeDriver(chromeOptions));
+                System.out.println("✅ Started Chrome locally.");
+                break;
+
+            case "firefox":
+                WebDriverManager.firefoxdriver().setup();
+                FirefoxOptions firefoxOptions = new FirefoxOptions();
+                if (isHeadless) firefoxOptions.addArguments("--headless");
+                firefoxOptions.addArguments("-private");
+                driver.set(new FirefoxDriver(firefoxOptions));
+                System.out.println("✅ Started Firefox locally.");
+                break;
+
+            case "safari":
+                if (isMac()) {
+                    enableSafariDriver(); // ✅ Auto-enable SafariDriver on macOS
+                    SafariOptions safariOptions = new SafariOptions();
+                    System.out.println("⚠️ Safari does not support headless mode. Running in normal mode.");
+                    driver.set(new SafariDriver(safariOptions));
+                    System.out.println("✅ Started Safari locally.");
+                } else {
+                    throw new UnsupportedOperationException("❌ Safari is only supported on macOS!");
+                }
+                break;
+
+            case "edge":
+                WebDriverManager.edgedriver().setup();
+                EdgeOptions edgeOptions = new EdgeOptions();
+                if (isHeadless) edgeOptions.addArguments("--headless");
+                edgeOptions.addArguments("--inprivate");
+                driver.set(new EdgeDriver(edgeOptions));
+                System.out.println("✅ Started Edge locally.");
+                break;
+
+            default:
+                throw new IllegalArgumentException("❌ Unsupported browser for local execution: " + browser);
+        }
+    }
+
+    private boolean isMac() {
+        String osName = System.getProperty("os.name").toLowerCase();
+        return osName.contains("mac");
+    }
+
+    private void enableSafariDriver() {
+        try {
+            System.out.println("🔄 Checking and enabling SafariDriver...");
+            ProcessBuilder pb = new ProcessBuilder("safaridriver", "--enable");
+            Process process = pb.start();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println("SafariDriver: " + line);
+            }
+
+            int exitCode = process.waitFor();
+            if (exitCode == 0) {
+                System.out.println("✅ SafariDriver enabled successfully.");
+            } else {
+                System.out.println("⚠️ SafariDriver enable command returned exit code: " + exitCode);
+            }
+        } catch (Exception e) {
+            System.out.println("⚠️ Unable to auto-enable SafariDriver. Run 'safaridriver --enable' manually.");
+        }
+    }
+
     public static WebDriver getDriver() {
         if (driver.get() == null) {
-            throw new IllegalStateException("WebDriver not initialized for this thread!");
+            throw new IllegalStateException("❌ WebDriver not initialized for this thread!");
         }
         return driver.get();
     }
@@ -152,6 +217,7 @@ public class BaseClass {
         if (driver.get() != null) {
             getDriver().quit();
             driver.remove();
+            System.out.println("✅ WebDriver closed and cleaned up.");
         }
     }
 }

@@ -25,7 +25,7 @@ public class RegistrationTests extends BaseClass {
         RegistrationTestData testData = RegistrationTestData.generateRandom();
 
         String accountCreatedSucMsg = getUserRegiData(testData);
-        softAssert.assertEquals(accountCreatedSucMsg, "Account Created Successfully");
+        softAssert.assertEquals(accountCreatedSucMsg.trim(), "Account Created Successfully");
 
         // Only insert into DB if registration was successful
         if ("Account Created Successfully".equals(accountCreatedSucMsg)) {

@@ -20,7 +20,7 @@ public class ConfigReader {
 
             // Load sensitive config
 
-            String secretsConfigFilePath = System.getProperty("user.dir") + "/src/main/java/org/resources/secretsConfig.properties";
+            String secretsConfigFilePath = System.getProperty("user.dir") + "/src/main/java/org/resources/secretConfig.properties";
             FileInputStream secretsConfigFis = new FileInputStream(secretsConfigFilePath);
             secretProperties.load(secretsConfigFis);
             secretsConfigFis.close();
@@ -133,5 +133,17 @@ public class ConfigReader {
     }
     public static String getHubUrl() {
         return getValue("hubUrl", true); // URL for Selenium Grid
+    }
+
+    public static String getSeleniumServerJarPath() {
+        return getValue("seleniumServerJarPath", true);
+    }
+
+    public static String getHubIp() {
+        return getValue("hubIP", true);
+    }
+
+    public static String getHubPort() {
+        return getValue("hubPort", true);
     }
 }

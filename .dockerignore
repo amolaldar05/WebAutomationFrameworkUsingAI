@@ -1,0 +1,6 @@
+target
+screenshots
+test-output
+reports
+.idea
+*.iml

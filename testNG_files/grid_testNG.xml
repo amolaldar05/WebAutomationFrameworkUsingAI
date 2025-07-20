@@ -8,7 +8,8 @@
 
     <!-- Set global runMode: local or grid -->
     <parameter name="runMode" value="grid"/>
-    <parameter name="hubUrl" value="http://localhost:4444/"/>
+<!--    <parameter name="hubUrl" value="http://localhost:4444/"/>-->
+    <parameter name="hubUrl" value="http://selenium-hub:4444/"/>
 
     <!-- Run tests on Chrome -->
     <test name="ChromeTests">
@@ -29,13 +30,13 @@
     </test>
 
     <!-- Run tests on Safari -->
-    <test name="SafariTests">
-        <parameter name="browser" value="safari"/>
-        <classes>
-            <class name="org.amazon.LoginTests"/>
-            <class name="org.amazon.RegistrationTests"/>
-        </classes>
-    </test>
+<!--    <test name="SafariTests">-->
+<!--        <parameter name="browser" value="safari"/>-->
+<!--        <classes>-->
+<!--            <class name="org.amazon.LoginTests"/>-->
+<!--            <class name="org.amazon.RegistrationTests"/>-->
+<!--        </classes>-->
+<!--    </test>-->
 
     <!-- Run tests on Edge -->
     <test name="EdgeTests">

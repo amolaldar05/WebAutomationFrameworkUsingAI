@@ -8,7 +8,6 @@
 
     <!-- Set global runMode: local or grid -->
     <parameter name="runMode" value="local"/>
-    <parameter name="hubUrl" value="http://192.168.0.102:4444/"/>
 
     <!-- Run tests on Chrome -->
     <test name="ChromeTests">
@@ -28,14 +27,14 @@
         </classes>
     </test>
 
-    <!-- Run tests on Safari -->
-    <test name="SafariTests">
-        <parameter name="browser" value="safari"/>
-        <classes>
-            <class name="org.amazon.LoginTests"/>
-            <class name="org.amazon.RegistrationTests"/>
-        </classes>
-    </test>
+<!--    &lt;!&ndash; Run tests on Safari &ndash;&gt;-->
+<!--    <test name="SafariTests">-->
+<!--        <parameter name="browser" value="safari"/>-->
+<!--        <classes>-->
+<!--            <class name="org.amazon.LoginTests"/>-->
+<!--            <class name="org.amazon.RegistrationTests"/>-->
+<!--        </classes>-->
+<!--    </test>-->
 
     <!-- Run tests on Edge -->
     <test name="EdgeTests">

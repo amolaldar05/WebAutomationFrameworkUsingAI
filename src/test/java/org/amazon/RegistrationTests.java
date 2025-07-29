@@ -4,6 +4,7 @@ import org.BaseComponent.BaseClass2;
 import org.PageObjects.LoginPageObjects;
 import org.PageObjects.RegistrationPageObjects;
 import org.BaseComponent.BaseClass;
+import org.openqa.selenium.By;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.openqa.selenium.WebDriver;
@@ -52,5 +53,6 @@ public class RegistrationTests extends BaseClass {
         String accountCreatedSucMsg = registrationPage.clickRegister();
         return accountCreatedSucMsg;
     }
+
 
 }

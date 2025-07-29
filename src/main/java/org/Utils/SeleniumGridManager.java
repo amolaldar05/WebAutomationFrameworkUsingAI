@@ -1,164 +1,158 @@
 package org.Utils;
 
 import java.io.BufferedReader;
-import java.io.IOException;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Paths;
+import java.util.Map;
 
 public class SeleniumGridManager {
 
     private static Process hubProcess;
     private static Process nodeProcess;
 
+    // Auto-detect paths relative to project root
+    private static final String PROJECT_ROOT = System.getProperty("user.dir"); // Project base folder
+    private static final String DRIVERS_FOLDER = PROJECT_ROOT + "/src/main/java/org/drivers";
+    private static final String SELENIUM_JAR_NAME = "selenium-server-4.34.0.jar";
+    private static final String SELENIUM_JAR_PATH = Paths.get(DRIVERS_FOLDER, SELENIUM_JAR_NAME).toString();
+
+    private static final String HUB_PORT = "4444";
+
     /**
-     * Starts the Selenium Grid Hub
-     *
-     * @param seleniumServerJarPath Path to selenium-server-<version>.jar
-     * @param hubPort               Port where Hub will run
+     * Start Selenium Grid Hub locally
      */
-    public static void startHub(String seleniumServerJarPath, int hubPort) {
+    public static void startHub() {
         try {
-            System.out.println("🟢 Starting Selenium Grid Hub on port " + hubPort + "...");
-            ProcessBuilder hubBuilder = new ProcessBuilder(
-                    "java", "-jar", seleniumServerJarPath,
-                    "hub", "--port", String.valueOf(hubPort)
+            System.out.println("🚀 Starting Selenium Grid Hub on port " + HUB_PORT + "...");
+            System.out.println("📂 Selenium JAR Path: " + SELENIUM_JAR_PATH);
+            System.out.println("📂 Drivers Folder Path: " + DRIVERS_FOLDER);
+
+            ProcessBuilder pb = new ProcessBuilder(
+                    "java", "-jar", SELENIUM_JAR_PATH, "hub",
+                    "--port", HUB_PORT
             );
-            hubBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
-            hubBuilder.redirectError(ProcessBuilder.Redirect.INHERIT);
-            hubProcess = hubBuilder.start();
 
-            // Wait for Hub to become ready
-            String hubUrl = "http://localhost:" + hubPort + "/status";
-            waitForGridReady(hubUrl, 30); // Wait up to 30 seconds
+            // Add drivers folder to system PATH
+            addDriversToSystemPath(pb);
 
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException("❌ Failed to start Hub on port " + hubPort, e);
+            pb.redirectErrorStream(true);
+            hubProcess = pb.start();
+
+            printProcessLogs(hubProcess);
+            System.out.println("✅ Selenium Grid Hub started at http://localhost:" + HUB_PORT);
+        } catch (Exception e) {
+            throw new RuntimeException("❌ Failed to start Selenium Grid Hub: " + e.getMessage(), e);
         }
     }
 
     /**
-     * Starts the Selenium Grid Node
-     *
-     * @param seleniumServerJarPath Path to selenium-server-<version>.jar
-     * @param hubIp                 IP Address of the Hub (e.g., localhost or 192.168.x.x)
-     * @param hubPort               Port of the Hub
+     * Start Selenium Grid Node locally and register to Hub
+     * Decides dynamically whether to use Selenium Manager based on internet availability
      */
-    public static void startNode(String seleniumServerJarPath, String hubIp, int hubPort) {
+    public static void startNode() {
         try {
-            String hubUrl = "http://" + hubIp + ":" + hubPort;
-            System.out.println("🟡 Starting Selenium Grid Node connecting to Hub at " + hubUrl + "...");
-            ProcessBuilder nodeBuilder = new ProcessBuilder(
-                    "java", "-jar", seleniumServerJarPath,
-                    "node",
+            System.out.println("🚀 Starting Selenium Grid Node with driver detection...");
+            System.out.println("📂 Selenium JAR Path: " + SELENIUM_JAR_PATH);
+            System.out.println("📂 Drivers Folder Path: " + DRIVERS_FOLDER);
+
+            boolean internetAvailable = isInternetAvailable();
+            String seleniumManagerFlag = internetAvailable ? "true" : "false";
+
+            System.out.println(internetAvailable
+                    ? "🌐 Internet available: Using Selenium Manager for dynamic driver management."
+                    : "📴 No internet: Falling back to local drivers in offline mode.");
+
+            ProcessBuilder pb = new ProcessBuilder(
+                    "java", "-jar", SELENIUM_JAR_PATH, "node",
                     "--detect-drivers", "true",
-                    "--hub", hubUrl
+                    "--selenium-manager", seleniumManagerFlag
             );
-            nodeBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
-            nodeBuilder.redirectError(ProcessBuilder.Redirect.INHERIT);
-            nodeProcess = nodeBuilder.start();
 
-            // Wait for Node to register with Hub
-            waitForNodeReady(hubUrl + "/status", 30); // Wait up to 30 seconds
+            // Always add drivers folder to PATH for offline mode
+            addDriversToSystemPath(pb);
 
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException("❌ Failed to start Node for Hub at " + hubIp + ":" + hubPort, e);
+            pb.redirectErrorStream(true);
+            nodeProcess = pb.start();
+
+            printProcessLogs(nodeProcess);
+            System.out.println("✅ Selenium Grid Node registered to Hub.");
+        } catch (Exception e) {
+            throw new RuntimeException("❌ Failed to start Selenium Grid Node: " + e.getMessage(), e);
         }
     }
 
     /**
-     * Stops the Selenium Grid Hub and Node processes if running.
+     * Check if the system has internet connectivity
      */
-    public static void stopGrid() {
-        if (nodeProcess != null && nodeProcess.isAlive()) {
-            System.out.println("🔴 Stopping Selenium Grid Node...");
-            nodeProcess.destroy();
-        }
-        if (hubProcess != null && hubProcess.isAlive()) {
-            System.out.println("🔴 Stopping Selenium Grid Hub...");
-            hubProcess.destroy();
-        }
-    }
-
-    /**
-     * Waits until the Selenium Grid Hub is ready.
-     *
-     * @param statusUrl URL to check (e.g., http://localhost:4444/status)
-     * @param timeoutSeconds Timeout in seconds
-     */
-    private static void waitForGridReady(String statusUrl, int timeoutSeconds) throws InterruptedException {
-        System.out.println("⏳ Waiting for Selenium Grid Hub to be ready...");
-        boolean isReady = false;
-        long startTime = System.currentTimeMillis();
-
-        while ((System.currentTimeMillis() - startTime) < timeoutSeconds * 1000) {
-            if (checkGridStatus(statusUrl)) {
-                isReady = true;
-                break;
-            }
-            Thread.sleep(2000); // Wait 2 seconds before retry
-        }
-
-        if (!isReady) {
-            throw new RuntimeException("❌ Selenium Grid Hub did not become ready within " + timeoutSeconds + " seconds.");
-        }
-        System.out.println("✅ Selenium Grid Hub is ready.");
-    }
-
-    /**
-     * Waits until the Selenium Grid Node registers with the Hub.
-     *
-     * @param statusUrl URL to check (e.g., http://localhost:4444/status)
-     * @param timeoutSeconds Timeout in seconds
-     */
-    private static void waitForNodeReady(String statusUrl, int timeoutSeconds) throws InterruptedException {
-        System.out.println("⏳ Waiting for Selenium Grid Node to register...");
-        boolean isReady = false;
-        long startTime = System.currentTimeMillis();
-
-        while ((System.currentTimeMillis() - startTime) < timeoutSeconds * 1000) {
-            if (checkGridStatus(statusUrl)) {
-                isReady = true;
-                break;
-            }
-            Thread.sleep(2000); // Wait 2 seconds before retry
-        }
-
-        if (!isReady) {
-            throw new RuntimeException("❌ Selenium Grid Node did not register within " + timeoutSeconds + " seconds.");
-        }
-        System.out.println("✅ Selenium Grid Node is registered.");
-    }
-
-    /**
-     * Checks if the Selenium Grid is ready.
-     *
-     * @param statusUrl URL to check
-     * @return true if Grid reports ready, false otherwise
-     */
-    private static boolean checkGridStatus(String statusUrl) {
+    private static boolean isInternetAvailable() {
         try {
-            URL url = new URL(statusUrl);
+            URL url = new URL("https://www.google.com/");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setConnectTimeout(2000);
+            connection.setConnectTimeout(2000); // 2 seconds timeout
             connection.connect();
-
-            if (connection.getResponseCode() == 200) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                String line;
-                StringBuilder response = new StringBuilder();
-
-                while ((line = reader.readLine()) != null) {
-                    response.append(line);
-                }
-                reader.close();
-
-                return response.toString().contains("\"ready\":true");
-            }
-        } catch (IOException ignored) {
-            // Ignore connection errors during retries
+            return connection.getResponseCode() == 200;
+        } catch (Exception e) {
+            return false;
         }
-        return false;
+    }
+
+    /**
+     * Add drivers folder to the system PATH variable
+     */
+    private static void addDriversToSystemPath(ProcessBuilder pb) {
+        File driversDir = new File(DRIVERS_FOLDER);
+        if (driversDir.exists() && driversDir.isDirectory()) {
+            Map<String, String> env = pb.environment();
+            String currentPath = env.get("PATH");
+            env.put("PATH", DRIVERS_FOLDER + File.pathSeparator + currentPath);
+            System.out.println("✅ Drivers folder added to system PATH.");
+        } else {
+            throw new RuntimeException("❌ Drivers folder not found at: " + DRIVERS_FOLDER);
+        }
+    }
+
+    /**
+     * Stop Selenium Grid Hub
+     */
+    public static void stopHub() {
+        if (hubProcess != null && hubProcess.isAlive()) {
+            System.out.println("🛑 Stopping Selenium Grid Hub...");
+            hubProcess.destroy();
+            System.out.println("✅ Selenium Grid Hub stopped.");
+        } else {
+            System.out.println("⚠️ Hub process is not running.");
+        }
+    }
+
+    /**
+     * Stop Selenium Grid Node
+     */
+    public static void stopNode() {
+        if (nodeProcess != null && nodeProcess.isAlive()) {
+            System.out.println("🛑 Stopping Selenium Grid Node...");
+            nodeProcess.destroy();
+            System.out.println("✅ Selenium Grid Node stopped.");
+        } else {
+            System.out.println("⚠️ Node process is not running.");
+        }
+    }
+
+    /**
+     * Print logs from the process
+     */
+    private static void printProcessLogs(Process process) {
+        new Thread(() -> {
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    System.out.println("[Grid] " + line);
+                }
+            } catch (Exception ignored) {
+            }
+        }).start();
     }
 }

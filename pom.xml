@@ -76,7 +76,15 @@
       <version>4.34.0</version>
     </dependency>
 
-<!--    &lt;!&ndash; https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-chrome-driver &ndash;&gt;-->
+    <!-- For Java + Selenium -->
+    <dependency>
+      <groupId>com.epam.healenium</groupId>
+      <artifactId>healenium-web</artifactId>
+      <version>3.4.1</version>
+    </dependency>
+
+
+    <!--    &lt;!&ndash; https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-chrome-driver &ndash;&gt;-->
 <!--    <dependency>-->
 <!--      <groupId>org.seleniumhq.selenium</groupId>-->
 <!--      <artifactId>selenium-chrome-driver</artifactId>-->

@@ -7,8 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.BaseComponent.BaseClass;
-import org.BaseComponent.BaseClass2;
+import org.BaseComponent.BaseClass_Healenium;
 import org.PageObjects.HeaderObjects;
 import org.PageObjects.LoginPageObjects;
 import org.PageObjects.ProductListingPageObjects;
@@ -20,7 +19,7 @@ import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
 
-public class LoginTests extends BaseClass {
+public class LoginTests extends BaseClass_Healenium {
 	private LoginPageObjects loginPage;
 	JsonUtils jsonUtils;
 	SoftAssert softAssert = new SoftAssert();

@@ -146,4 +146,10 @@ public class ConfigReader {
     public static String getHubPort() {
         return getValue("hubPort", true);
     }
+    public static String getSeleniumGridVersion() {
+        return getValue("seleniumGridVersion", true);
+    }
+    public static boolean isHealingEnabled() {
+        return Boolean.parseBoolean(getValue("hlm.healing.enabled", true));
+    }
 }

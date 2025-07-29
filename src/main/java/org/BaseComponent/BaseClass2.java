@@ -28,8 +28,8 @@ public class BaseClass2 {
             String hubIp = ConfigReader.getHubIp();                 // add in config.properties
             int hubPort = Integer.parseInt(ConfigReader.getHubPort());                // add in config.properties
 
-            SeleniumGridManager.startHub(seleniumJar, hubPort);
-            SeleniumGridManager.startNode(seleniumJar, hubIp, hubPort);
+            SeleniumGridManager.startHub();
+            SeleniumGridManager.startNode();
             gridStarted = true;
         }
     }
@@ -159,7 +159,8 @@ public class BaseClass2 {
     @AfterSuite(alwaysRun = true)
     public void stopGridIfStarted() {
         if (gridStarted) {
-            SeleniumGridManager.stopGrid();
+            SeleniumGridManager.stopHub();
+            SeleniumGridManager.stopNode();
         }
     }
 }

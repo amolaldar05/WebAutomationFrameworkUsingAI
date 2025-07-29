@@ -2,6 +2,7 @@ package org.BaseComponent;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.Utils.ConfigReader;
+import org.Utils.SeleniumGridManager;
 import org.openqa.selenium.SessionNotCreatedException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -14,10 +15,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Optional;
-import org.testng.annotations.Parameters;
+import org.testng.annotations.*;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -30,6 +28,12 @@ public class BaseClass {
 
     public static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
 
+    @BeforeSuite(alwaysRun = true)
+    public void startSeleniumGrid() {
+        System.out.println("🔧 Managing Selenium Grid lifecycle...");
+        SeleniumGridManager.startHub();
+        SeleniumGridManager.startNode();
+    }
     @BeforeMethod(alwaysRun = true)
     @Parameters({"browser", "runMode", "hubUrl"}) // runMode: local or grid
     public void setUp(@Optional String browserFromXML,
@@ -219,5 +223,11 @@ public class BaseClass {
             driver.remove();
             System.out.println("✅ WebDriver closed and cleaned up.");
         }
+    }
+    @AfterSuite(alwaysRun = true)
+    public void stopSeleniumGrid() {
+        System.out.println("🧹 Cleaning up Selenium Grid...");
+        SeleniumGridManager.stopNode();
+        SeleniumGridManager.stopHub();
     }
 }

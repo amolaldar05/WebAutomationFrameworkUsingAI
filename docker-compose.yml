@@ -12,6 +12,8 @@ services:
       - GRID_MAX_SESSION=16
       - GRID_BROWSER_TIMEOUT=300
       - GRID_TIMEOUT=300
+    networks:
+      - grid
 
   chrome:
     image: selenium/node-chrome:4.21.0
@@ -26,6 +28,8 @@ services:
     ports:
       - "5900:5900" # VNC for Chrome debug
     shm_size: "2gb"
+    networks:
+      - grid
 
   firefox:
     image: selenium/node-firefox:4.21.0
@@ -40,6 +44,8 @@ services:
     ports:
       - "5901:5900" # VNC for Firefox debug
     shm_size: "2gb"
+    networks:
+      - grid
 
   edge:
     image: selenium/node-edge:4.21.0
@@ -54,6 +60,48 @@ services:
     ports:
       - "5902:5900" # VNC for Edge debug
     shm_size: "2gb"
+    networks:
+      - grid
+
+  healenium:
+    image: healenium/hlm-backend:3.4.9
+    container_name: healenium
+    depends_on:
+      - postgres-db
+    ports:
+      - "7878:7878"
+    networks:
+      - grid
+
+  selector-imitator:
+    image: healenium/hlm-selector-imitator:1.6
+    container_name: selector-imitator
+    ports:
+      - "8000:8000"
+    networks:
+      - grid
+
+  healenium-dashboard:
+    image: healenium/hlm-dashboard:1.1.0
+    container_name: healenium-dashboard
+    depends_on:
+      - healenium
+    ports:
+      - "8090:8090"
+    networks:
+      - grid
+
+  postgres-db:
+    image: postgres:15.5-alpine
+    container_name: postgres-db
+    environment:
+      POSTGRES_DB: healenium
+      POSTGRES_USER: healenium
+      POSTGRES_PASSWORD: healenium
+    ports:
+      - "5432:5432"
+    networks:
+      - grid
 
   automation:
     build: .
@@ -63,9 +111,10 @@ services:
       - chrome
       - firefox
       - edge
+      - healenium
+      - selector-imitator
     environment:
-      # Pass Grid Hub URL to your tests
-      - HUB_URL=http://192.168.0.102:4444/
+      - HUB_URL=http://selenium-hub:4444/
       - ENV=dev
     command: >
       mvn clean test -P grid

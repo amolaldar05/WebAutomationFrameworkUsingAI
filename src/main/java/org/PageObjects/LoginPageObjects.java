@@ -16,7 +16,7 @@ public class LoginPageObjects {
     private final WebDriver driver;
 
 
-    @FindBy(id = "userEmail")
+    @FindBy(xpath = "userEmail")
     private WebElement emailInput;
 
     @FindBy(id = "userPassword")
